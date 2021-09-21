@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class Painter(ABC):
+class Factory(ABC):
     @abstractmethod
-    def draw(self, figure, is_filled: bool):
+    def create(self):
         pass
