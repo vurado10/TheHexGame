@@ -1,6 +1,12 @@
-import abc
+from abc import ABC, abstractmethod
 
-class Painter(metaclass=abc.ABCmeta):
-    @abc.abstractmethod
-    def draw(self):
+from pygame.math import Vector2
+
+
+class Painter(ABC):
+    @abstractmethod
+    def draw(self,
+             center: Vector2,
+             radius: int,
+             rotation_angle_radians: float):
         pass
