@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from painter import Painter
 from pygame.math import Vector2
 
 

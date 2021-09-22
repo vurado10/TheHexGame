@@ -1,30 +1,28 @@
 import sys
 import pygame
-from rgb_colors import RgbColors
 from button import Button
-from hexagon_figure import HexagonFigure
-from hexagon_painter import HexagonPainter
+from hex_field import HexField
 from pygame.math import Vector2
+from rectangular_figure import RectangularFigure
+from rectangular_painter import RectangularPainter
+from rgb_colors import RgbColors
 
 if __name__ == "__main__":
     pygame.init()
 
-    screen = pygame.display.set_mode((640, 480))
+    screen = pygame.display.set_mode((800, 450))
     clock = pygame.time.Clock()
     scene = None
 
-    test_button = Button(HexagonFigure(
-        Vector2(250, 250),
-        50,
-        0,
-        HexagonPainter(screen,
-                       0.95,
-                       RgbColors.WHITE,
-                       RgbColors.BLACK,
-                       RgbColors.WHITE)
-    ))
+    hex_field = HexField(screen, 10, 10, RgbColors.WHITE,
+                         RgbColors.BLACK, RgbColors.WHITE, RgbColors.BLACK)
+    hex_field.show()
 
-    test_button.on_click_function = lambda: test_button.switch_state()
+    # button = Button(RectangularFigure(Vector2(250, 250), 80, 45,
+    #                                   RectangularPainter(screen,
+    #                                                      RgbColors.WHITE)))
+    #
+    # button.on_click_function = lambda b: print("Clicked")
 
     while True:
         clock.tick(40)
@@ -33,11 +31,11 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if test_button.is_clicked(Vector2(pygame.mouse.get_pos())):
-                    test_button.on_click_function()
-
-
-        # image = pygame.image.load("test_image.jpg")
-        # screen.blit(pygame.transform.scale(image, (160, 90)), (150, 150))
+                # if button.is_clicked(Vector2(pygame.mouse.get_pos())):
+                #     button.on_click_function(button)
+                for i in hex_field.controls:
+                    if i.is_clicked(Vector2(pygame.mouse.get_pos())):
+                        i.on_click_function(i)
+                        break
 
         pygame.display.flip()

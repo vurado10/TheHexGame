@@ -1,15 +1,18 @@
 from figure import Figure
+from label import Label
 from pygame.math import Vector2
 
 
 class Button:
-    def __init__(self,
-                 figure: Figure):
+    def __init__(self, figure: Figure, label: Label = None):
         self._figure = figure
+        self._label = label
         self._state = 0
         self._on_click_function = None
 
         self._figure.start_painter(False)
+        if self._label is not None:
+            self._label.show()
 
     @property
     def on_click_function(self):

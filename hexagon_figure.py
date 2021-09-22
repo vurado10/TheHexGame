@@ -10,11 +10,9 @@ class HexagonFigure(Figure):
                  radius: int,
                  rotation_angle_radians: float,
                  painter: HexagonPainter):
-        if not isinstance(painter, HexagonPainter):
-            raise Exception("painter must be an instance of HexagonPainter")
+        self.change_painter(painter)
 
-        self._painter = painter
-        self._center = center
+        self._center = Vector2(center)
         self._radius = radius
         self._rotation_angle_radians = rotation_angle_radians
 
@@ -33,6 +31,12 @@ class HexagonFigure(Figure):
     @property
     def center(self):
         return Vector2(self._center)
+
+    def change_painter(self, painter: HexagonPainter):
+        if not isinstance(painter, HexagonPainter):
+            raise Exception("painter must be an instance of HexagonPainter")
+
+        self._painter = painter
 
     def start_painter(self, is_filled: bool) -> None:
         self._painter.draw(self, is_filled)
