@@ -18,9 +18,13 @@ class Figure(ABC):
         self._rotation_radians = rotation_radians
 
     @property
+    def center(self):
+        return Vector2(self._center)
+
+    @property
     @abstractmethod
     def vertexes(self):
-        return [Vector2()]
+        return None
 
     def is_point_inside(self, point: Vector2) -> bool:
         pass

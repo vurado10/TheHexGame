@@ -1,18 +1,14 @@
 import math
-from gui_lib.figures.figure import Figure
+from gui_lib.figures.described_figure import DescribedFigure
 from pygame.math import Vector2
 
 
-class HexagonFigure(Figure):
+class HexagonFigure(DescribedFigure):
     def __init__(self,
                  center: Vector2,
                  size: Vector2,
                  rotation_radians: float):
         super(HexagonFigure, self).__init__(center, size, rotation_radians)
-
-        if self._size.x != self._size.y:
-            raise Exception(f"Hexagon size.x must be equal to "
-                            f"size.y, but size: {self._size}")
 
         self.__radius = self._size.x
 
@@ -27,13 +23,20 @@ class HexagonFigure(Figure):
         ]
 
     def scale(self, factor: float):
-        pass
+        return HexagonFigure(self._center,
+                             Vector2(self._size.x * factor,
+                                     self._size.y * factor),
+                             self._rotation_radians)
 
     def rotate(self, radians: float):
-        pass
+        return HexagonFigure(self._center,
+                             self._size,
+                             self._rotation_radians + radians)
 
     def translate(self, offset: Vector2):
-        pass
+        return HexagonFigure(self._center + offset,
+                             self._size,
+                             self._rotation_radians)
 
     @staticmethod
     def __get_normalized_vertexes(rotation_angle_radians: float):
