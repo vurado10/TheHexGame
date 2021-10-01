@@ -2,6 +2,7 @@ import math
 from figure import Figure
 from hexagon_painter import HexagonPainter
 from pygame.math import Vector2
+from radius_size import RadiusSize
 
 
 class HexagonFigure(Figure):
@@ -10,21 +11,18 @@ class HexagonFigure(Figure):
                  radius: int,
                  rotation_angle_radians: float,
                  painter: HexagonPainter):
-        self.change_painter(painter)
+        super(HexagonFigure, self).__init__(center,
+                                            RadiusSize(radius,
+                                                       rotation_angle_radians),
+                                            painter)
 
-        self._center = Vector2(center)
-        self._radius = radius
-        self._rotation_angle_radians = rotation_angle_radians
+    def get_vertexes(self, center, size: RadiusSize):
 
-        self._border_vertexes = self.vertexes
-
-    @property
-    def vertexes(self):
         normalized_vertexes = \
-            self._get_normalized_vertexes(self._rotation_angle_radians)
+            self._get_normalized_vertexes(size.rotation_angle_radians)
 
         return [
-            self._center + self._radius * vertex
+            center + size.radius * vertex
             for vertex in normalized_vertexes
         ]
 
@@ -32,35 +30,17 @@ class HexagonFigure(Figure):
     def center(self):
         return Vector2(self._center)
 
-    def change_painter(self, painter: HexagonPainter):
-        if not isinstance(painter, HexagonPainter):
-            raise Exception("painter must be an instance of HexagonPainter")
-
-        self._painter = painter
-
-    def start_painter(self, is_filled: bool) -> None:
-        self._painter.draw(self, is_filled)
-
-    def transform(self, translate_vector: Vector2, scale_factor: float,
+    def transform(self,
+                  translate_vector: Vector2,
+                  scale_factor: float,
                   rotate_angle_radians: float):
-        return HexagonFigure(self._center + translate_vector,
-                             int(self._radius * scale_factor),
-                             self._rotation_angle_radians
+        current_radius, current_angle = \
+            self._size.radius, self._size.rotation_angle_radians
+        return HexagonFigure(self.center + translate_vector,
+                             int(current_radius * scale_factor),
+                             current_angle
                              + rotate_angle_radians,
                              self._painter)
-
-    def is_point_inside(self, point: Vector2) -> bool:
-        length = len(self._border_vertexes)
-        for index in range(1, length + 1):
-            point1 = self._border_vertexes[(index - 1) % length]
-            point2 = self._border_vertexes[index % length]
-
-            (r, s) = point2 - point1
-
-            if s * (point.x - point1.x) - r * (point.y - point1.y) < 0:
-                return False
-
-        return True
 
     @staticmethod
     def _get_normalized_vertexes(rotation_angle_radians: float):

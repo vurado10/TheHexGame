@@ -14,7 +14,7 @@ if __name__ == "__main__":
     clock = pygame.time.Clock()
     scene = None
 
-    hex_field = HexField(screen, 10, 10, RgbColors.WHITE,
+    hex_field = HexField(screen, 11, 11, RgbColors.WHITE,
                          RgbColors.BLACK, RgbColors.WHITE, RgbColors.BLACK)
     hex_field.show()
 

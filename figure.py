@@ -1,25 +1,47 @@
+import copy
 from abc import ABC, abstractmethod
+from figure_size import FigureSize
+from painter import Painter
 from pygame.math import Vector2
 
 
 class Figure(ABC):
-    @property
+    def __init__(self,
+                 center: Vector2,
+                 size: FigureSize,
+                 painter: Painter):
+        self._center = Vector2(center)
+        self._size = size
+        self._painter = painter
+        self._border_vertexes = self.get_vertexes(center, size)
+
     @abstractmethod
-    def vertexes(self):
+    def get_vertexes(self, center: Vector2, size: FigureSize):
         pass
 
     @property
-    @abstractmethod
+    def border_vertexes(self):
+        return self._border_vertexes
+
+    @property
     def center(self):
-        pass
+        return Vector2(self._center)
 
-    @abstractmethod
     def is_point_inside(self, point: Vector2) -> bool:
-        pass
+        length = len(self._border_vertexes)
+        for index in range(1, length + 1):
+            point1 = self._border_vertexes[(index - 1) % length]
+            point2 = self._border_vertexes[index % length]
 
-    @abstractmethod
+            (r, s) = point2 - point1
+
+            if s * (point.x - point1.x) - r * (point.y - point1.y) < 0:
+                return False
+
+        return True
+
     def start_painter(self, is_filled: bool) -> None:
-        pass
+        self._painter.draw(self, is_filled)
 
     @abstractmethod
     def transform(self,

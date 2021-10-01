@@ -1,3 +1,5 @@
+import math
+
 import pygame
 from button import Button
 from cell_states import CellStates
@@ -51,7 +53,7 @@ class HexField:
             for j in range(self._width):
                 f = HexagonFigure(last_center,
                                   radius,
-                                  11.0,
+                                  math.pi / 6,
                                   figure_painter)
                 self.controls.append(Button(f))
 

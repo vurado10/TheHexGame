@@ -20,16 +20,16 @@ class HexagonPainter(Painter):
 
     def draw(self, hexagon: Figure, is_filled: bool) -> None:
         self._draw_with_filling(hexagon.center,
-                                hexagon.vertexes,
+                                hexagon.get_vertexes(hexagon.center, hexagon._size),
                                 self._background_color)
-        self._draw_without_filling(hexagon.vertexes)
+        self._draw_without_filling(hexagon.get_vertexes(hexagon.center, hexagon._size))
 
         if is_filled:
             inner_hexagon = hexagon.transform(Vector2(),
                                               self._padding_factor,
                                               0.0)
             self._draw_with_filling(inner_hexagon.center,
-                                    inner_hexagon.vertexes,
+                                    inner_hexagon.get_vertexes(inner_hexagon.center, inner_hexagon._size),
                                     self._fill_color)
 
     def _draw_without_filling(self, vertexes) -> None:
