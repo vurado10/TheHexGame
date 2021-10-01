@@ -1,9 +1,14 @@
 from abc import ABC
+from gui_lib.scene_elements.event_handlers.event_handler import EventHandler
 
 
-class MouseClickHandler(ABC):
+class MouseClickHandler(EventHandler, ABC):
     def __init__(self):
-        self._on_click = None
+        super().__init__()
+        self._on_click_handlers = []
 
-    def set_on_click(self, func):
-        self._on_click = func
+    def add_on_click(self, func):
+        self._on_click_handlers.append(func)
+
+    def remove_on_click(self, func):
+        self._on_click_handlers.remove(func)

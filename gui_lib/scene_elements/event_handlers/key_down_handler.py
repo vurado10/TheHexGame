@@ -1,9 +1,14 @@
 from abc import ABC
+from gui_lib.scene_elements.event_handlers.event_handler import EventHandler
 
 
-class KeyDownHandler(ABC):
+class KeyDownHandler(EventHandler, ABC):
     def __init__(self):
-        self._on_key_down = None
+        super().__init__()
+        self._on_key_down_handlers = []
 
-    def set_key_down(self, func):
-        self._on_key_down = func
+    def add_on_key_down(self, func):
+        self._on_key_down_handlers.append(func)
+
+    def remove_on_key_down(self, func):
+        self._on_key_down_handlers.remove(func)
