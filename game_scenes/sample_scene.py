@@ -13,11 +13,11 @@ class SampleScene(Scene):
 
         state_1 = DescribedFigurePainter(RgbColors.BLACK,
                                          RgbColors.WHITE,
-                                         RgbColors.BLACK, 0.9)
+                                         RgbColors.BLACK, 0.95)
 
         state_2 = DescribedFigurePainter(RgbColors.BLACK,
                                          RgbColors.WHITE,
-                                         RgbColors.WHITE, 0.9)
+                                         RgbColors.WHITE, 1)
 
         button = Button(RectangleFigure(Vector2(250, 250),
                                         Vector2(50, 50),
