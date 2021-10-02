@@ -1,10 +1,7 @@
 import sys
 import pygame
-from button import Button
 from hex_field import HexField
 from pygame.math import Vector2
-from rectangular_figure import RectangularFigure
-from rectangular_painter import RectangularPainter
 from rgb_colors import RgbColors
 
 if __name__ == "__main__":
@@ -35,7 +32,7 @@ if __name__ == "__main__":
                 #     button.on_click_function(button)
                 for i in hex_field.controls:
                     if i.is_clicked(Vector2(pygame.mouse.get_pos())):
-                        i.on_click_function(i)
+                        i.handle(event)
                         break
 
         pygame.display.flip()

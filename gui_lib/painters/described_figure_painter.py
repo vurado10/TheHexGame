@@ -15,29 +15,22 @@ class DescribedFigurePainter(Painter):
                  padding_factor: float):
         super().__init__(bg_color, border_color, fill_color, padding_factor)
 
-    def draw(self, surface: Surface, figure: Figure, is_filled: bool) -> None:
+    def draw(self, surface: Surface, figure: Figure) -> None:
         if not isinstance(figure, DescribedFigure):
             raise Exception("figure must be DescribedFigure")
 
-        self.__draw_with_filling(surface,
-                                 figure.center,
-                                 figure.vertexes,
-                                 self._bg_color)
+        self.__draw_with_filling(surface, figure.center,
+                                 figure.vertexes, self._bg_color)
+
         self.__draw_border(surface, figure.vertexes)
 
-        if is_filled:
-            inner_figure = figure.scale(self._padding_factor)
-
-            self.__draw_with_filling(surface,
-                                     inner_figure.center,
-                                     inner_figure.vertexes,
-                                     self._fill_color)
+        inner_figure = figure.scale(self._padding_factor)
+        self.__draw_with_filling(surface, inner_figure.center,
+                                 inner_figure.vertexes, self._fill_color)
 
     def __draw_border(self, surface: Surface, vertexes) -> None:
-        pygame.draw.aalines(surface,
-                            self._border_color.convert_to_tuple(),
-                            True,
-                            vertexes)
+        pygame.draw.aalines(surface, self._border_color.convert_to_tuple(),
+                            True, vertexes)
 
     @staticmethod
     def __draw_with_filling(surface: Surface,
@@ -55,4 +48,3 @@ class DescribedFigurePainter(Painter):
             pygame.draw.polygon(surface,
                                 color.convert_to_tuple(),
                                 polygon_vertexes)
-

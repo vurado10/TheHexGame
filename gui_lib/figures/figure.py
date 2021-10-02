@@ -1,4 +1,6 @@
 from abc import ABC
+from typing import List
+
 from abcmeta import abstractmethod
 from pygame.math import Vector2
 
@@ -23,11 +25,21 @@ class Figure(ABC):
 
     @property
     @abstractmethod
-    def vertexes(self):
-        return None
+    def vertexes(self) -> List[Vector2]:
+        return []
 
     def is_point_inside(self, point: Vector2) -> bool:
-        pass
+        border_vertexes = self.vertexes
+        length = len(border_vertexes)
+        for index in range(1, length + 1):
+            point1 = border_vertexes[(index - 1) % length]
+            point2 = border_vertexes[index % length]
+
+            (r, s) = point2 - point1
+
+            if s * (point.x - point1.x) - r * (point.y - point1.y) < 0:
+                return False
+        return True
 
     @abstractmethod
     def scale(self, factor: float):

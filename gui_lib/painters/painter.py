@@ -16,7 +16,7 @@ class Painter(ABC):
         self._padding_factor = padding_factor
 
     @abstractmethod
-    def draw(self, surface: Surface, figure: Figure, is_filled: bool) -> None:
+    def draw(self, surface: Surface, figure: Figure) -> None:
         pass
 
 
