@@ -1,25 +1,25 @@
 import math
-
 import pygame
 from cell_states import CellStates
 from gui_lib.figures.hexagon_figure import HexagonFigure
 from gui_lib.painters.described_figure_painter import DescribedFigurePainter
 from gui_lib.rgb_color import RgbColor
 from gui_lib.rgb_colors import RgbColors
+from gui_lib.scene import Scene
 from gui_lib.scene_elements.button import Button
 from pygame.math import Vector2
 
 
 class HexField:
     def __init__(self,
-                 surface: pygame.Surface,
+                 scene: Scene,
                  width,
                  height,
                  border_color: RgbColor,
                  background_color: RgbColor,
                  player_color1: RgbColor,
                  player_color2: RgbColor):
-        self._surface = surface
+        self.__scene = scene
         self._width = width
         self._height = height
         self._border_color = border_color
@@ -35,8 +35,7 @@ class HexField:
                 self._cells[i].append(CellStates.NEUTRAL)
 
     def show(self):
-        surface_width = self._surface.get_width()
-        surface_height = self._surface.get_height()
+        surface_width, surface_height = self.__scene.size
         radius = min(surface_height / (2 + 3 * (self._height - 1) / 2),
                      2 * surface_width / (
                              3 ** (1 / 2) * (3 * self._width - 1)))
@@ -70,7 +69,6 @@ class HexField:
                 button.update_on(self._surface)
 
                 self.controls.append(button)
-
 
                 last_center += Vector2(2 * h, 0)
             last_center = Vector2(h * (i + 2), last_center.y + 3 * radius / 2)

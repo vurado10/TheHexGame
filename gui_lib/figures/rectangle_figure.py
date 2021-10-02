@@ -21,10 +21,10 @@ class RectangleFigure(DescribedFigure):
         half_width, half_height = self.__width / 2, self._height / 2
 
         return [
-            self._center + Vector2(-half_width, half_height),
             self._center + Vector2(-half_width, -half_height),
-            self._center + Vector2(half_width, -half_height),
-            self._center + Vector2(half_width, half_height)
+            self._center + Vector2(-half_width, half_height),
+            self._center + Vector2(half_width, half_height),
+            self._center + Vector2(half_width, -half_height)
         ]
 
     def scale(self, factor: float):

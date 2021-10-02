@@ -1,0 +1,2 @@
+class HexFieldModel:
+    pass

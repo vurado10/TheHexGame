@@ -39,6 +39,7 @@ class Figure(ABC):
 
             if s * (point.x - point1.x) - r * (point.y - point1.y) < 0:
                 return False
+
         return True
 
     @abstractmethod

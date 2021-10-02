@@ -20,6 +20,9 @@ class LabelBuilder:
     def set_font_size(self, size: int):
         self.__font_size = size
 
+    def set_font_color(self, color: RgbColor):
+        self.__font_color = color
+
     def build(self) -> Surface:
         font = pygame.font.SysFont(self.__font_name, self.__font_size)
 
