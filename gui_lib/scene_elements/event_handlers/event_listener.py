@@ -4,12 +4,12 @@ from typing import List
 from pygame.event import Event
 
 
-class EventHandler(ABC):
-    def __init__(self, event_types: List[int]):
-        self._handling_event_types = list(event_types)
+class EventListener(ABC):
+    def __init__(self):
+        self.__handling_event_types = []
         self._handlers_functions = []
 
-    def handle(self, event: Event):
+    def notify(self, event: Event):
         if not self.is_valid_event(event):
             return
 
@@ -17,8 +17,17 @@ class EventHandler(ABC):
             func(self, event)
 
     def get_handling_event_types(self):
-        for event_type in self._handling_event_types:
+        for event_type in self.__handling_event_types:
             yield event_type
+
+    def add_handler(self, handler_func):
+        self._handlers_functions.append(handler_func)
+
+    def remove_handler(self, handler_func):
+        self._handlers_functions.remove(handler_func)
+
+    def add_listening_type(self, event_type: int):
+        self.__handling_event_types.append(event_type)
 
     @abstractmethod
     def is_valid_event(self, event: Event) -> bool:

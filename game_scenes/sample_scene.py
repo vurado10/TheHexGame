@@ -1,9 +1,6 @@
-import random
 import threading
 import time
-
 import pygame.key
-from gui_lib import app
 from gui_lib.figures.rectangle_figure import RectangleFigure
 from gui_lib.painters.described_figure_painter import DescribedFigurePainter
 from gui_lib.rgb_color import RgbColor
@@ -75,8 +72,8 @@ class SampleScene(Scene):
                 else:
                     text_input.label_builder.set_text(text_input.label_builder.text + pygame.key.name(event.key))
 
-        ti.add_on_click(on_click_text_input)
-        ti.add_on_key_down(on_key_down_text_input)
+        ti.add_handler(on_click_text_input)
+        ti.add_handler(on_key_down_text_input)
 
         def click_func(bt: Button, evt):
             nonlocal lb, ti
@@ -97,7 +94,7 @@ class SampleScene(Scene):
         t = threading.Thread(target=wt, args=(button, None))
         t.start()
 
-        button.add_on_click(click_func)
+        button.add_handler(click_func)
 
         self.add_gui_event_handler(button)
         self.add_gui_element(lb)

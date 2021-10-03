@@ -17,4 +17,4 @@ class EventManager:
                 event.type)
 
             for handler in handlers:
-                handler.handle(event)
+                handler.notify(event)
