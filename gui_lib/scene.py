@@ -1,8 +1,10 @@
-from typing import List, Tuple
+import sys
+from typing import Tuple, Dict, List
+import pygame
+from gui_lib.rgb_color import RgbColor
 from gui_lib.rgb_colors import RgbColors
 from gui_lib.scene_elements.event_handlers.event_handler import EventHandler
 from gui_lib.scene_elements.gui_elements.gui_element import GuiElement
-from pygame.event import EventType
 from pygame.surface import Surface
 
 
@@ -10,11 +12,19 @@ class Scene:
     def __init__(self, screen: Surface):
         self._screen = screen
         self._gui_elements = []
-        self._event_handlers_by_event_type = dict()
+        self._event_handlers_by_event_type: Dict[int, List[EventHandler]]
+
+        self._event_handlers_by_event_type = {
+            pygame.QUIT: [] # TODO: exit event handler
+        }
+        self._bg_color = RgbColors.BLACK
 
     @property
     def size(self) -> Tuple[int, int]:
         return self._screen.get_size()
+
+    def set_bg_color(self, color: RgbColor):
+        self._bg_color = color
 
     def get_gui_elements(self):
         for element in self._gui_elements:
@@ -37,21 +47,15 @@ class Scene:
             self._event_handlers_by_event_type[event_type].append(
                 event_handler)
 
-    def hide(self):
-        self._screen.fill(RgbColors.BLACK)
-
-    def show(self):
-        for element in self._gui_elements:
-            element.update_on(self._screen)
-
-    def get_event_handlers_by_event_type(self, event_type: EventType):
+    def get_event_handlers_by_event_type(self, event_type: int):
         if event_type not in self._event_handlers_by_event_type:
             self._event_handlers_by_event_type[event_type] = []
 
         for handler in self._event_handlers_by_event_type[event_type]:
             yield handler
 
-    def update_gui_elements(self, elements: List[GuiElement]):
-        for element in elements:
-            if element in self._gui_elements:
-                element.update_on(self._screen)
+    def update(self):
+        self._screen.fill(self._bg_color.convert_to_tuple())
+
+        for element in self._gui_elements:
+            element.update_on(self._screen)

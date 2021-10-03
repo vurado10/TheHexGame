@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 from gui_lib.figures.figure import Figure
 from gui_lib.painters.painter import Painter
+from pygame.math import Vector2
 from pygame.surface import Surface
 
 
@@ -13,6 +14,14 @@ class GuiElement(ABC):
         self._current_state = 0
         self._states_painters = states_painters
         self._figure = figure
+
+    @property
+    def position(self) -> Vector2:
+        return self._figure.center
+
+    @position.setter
+    def position(self, position: Vector2):
+        self._figure.center = position
 
     def switch_to_next_state(self):
         self._current_state = (self._current_state + 1) \

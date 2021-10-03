@@ -23,6 +23,10 @@ class Figure(ABC):
     def center(self):
         return Vector2(self._center)
 
+    @center.setter
+    def center(self, point: Vector2):
+        self._center = Vector2(point)
+
     @property
     @abstractmethod
     def vertexes(self) -> List[Vector2]:

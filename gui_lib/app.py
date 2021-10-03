@@ -1,6 +1,7 @@
-import pygame
 import sys
 from typing import Dict, Tuple
+
+import pygame
 from gui_lib.scene import Scene
 from gui_lib.scene_manager import SceneManager
 from pygame.surface import Surface
@@ -11,15 +12,15 @@ scene_manager: SceneManager
 screen: Surface
 __current_scene_name: str
 __scenes: Dict[str, Scene]
-__clock: Clock
+clock: Clock
 
 
 def init_app(screen_size: Tuple[int, int]):
-    global screen, __clock, scene_manager, __scenes
+    global screen, clock, scene_manager, __scenes
 
     pygame.init()
     screen = pygame.display.set_mode(screen_size)
-    __clock = Clock()
+    clock = Clock()
     scene_manager = SceneManager()
     __scenes = dict()
 
@@ -44,16 +45,10 @@ def show_scene():
 
 def start_main_loop():
     while True:
-        __clock.tick(fps)
+        clock.tick(fps)
 
-        events = pygame.event.get()
+        scene_manager.event_manager.handle_events_queue(pygame.event.get())
 
-        # TODO: quit_handler
-        if pygame.QUIT in [e.type for e in events]:
-            on_exit()
-
-        # if pygame.MOUSEBUTTONDOWN in [e.type for e in events]:
-        #     scene_manager.event_manager.handle_events_queue(events)
-        scene_manager.event_manager.handle_events_queue(events)
+        scene_manager.current_scene.update()
 
         pygame.display.flip()
