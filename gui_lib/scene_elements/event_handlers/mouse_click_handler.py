@@ -9,7 +9,8 @@ from pygame.math import Vector2
 
 class MouseClickHandler(EventHandler, ABC):
     def __init__(self, figure: Figure):
-        super(MouseClickHandler, self).__init__([pygame.MOUSEBUTTONDOWN])
+        # super(MouseClickHandler, self).__init__([pygame.MOUSEBUTTONDOWN])
+        EventHandler.__init__(self, [pygame.MOUSEBUTTONDOWN])
         self._figure = figure
 
     def add_on_click(self, func):

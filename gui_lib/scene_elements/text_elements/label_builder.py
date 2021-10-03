@@ -14,6 +14,10 @@ class LabelBuilder:
         self.__font_size = font_size
         self.__font_color = font_color
 
+    @property
+    def text(self) -> str:
+        return self.__text
+
     def set_text(self, text: str):
         self.__text = text
 

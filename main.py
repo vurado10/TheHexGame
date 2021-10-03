@@ -1,4 +1,3 @@
-import pygame.display
 from game_scenes.sample_scene import SampleScene
 from gui_lib import app
 
@@ -11,7 +10,7 @@ if __name__ == "__main__":
 
     app.add_scene("main", SampleScene(app.screen))
     app.set_current_scene("main")
-    app.start_scene()
+    app.show_scene()
 
     app.start_main_loop()
 

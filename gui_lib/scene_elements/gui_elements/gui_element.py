@@ -8,7 +8,7 @@ from pygame.surface import Surface
 class GuiElement(ABC):
     def __init__(self, figure: Figure, states_painters: List[Painter]):
         if len(states_painters) < 1:
-            raise Exception("button must have at least one state painter")
+            raise Exception()
 
         self._current_state = 0
         self._states_painters = states_painters
