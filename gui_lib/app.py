@@ -1,3 +1,4 @@
+import os
 import sys
 from typing import Dict, Tuple
 
@@ -47,7 +48,9 @@ def start_main_loop():
     while True:
         clock.tick(fps)
 
-        scene_manager.event_manager.handle_events_queue(pygame.event.get())
+        events = pygame.event.get()
+
+        scene_manager.current_scene.event_manager.handle_events_queue(events)
 
         scene_manager.current_scene.update()
 

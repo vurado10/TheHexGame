@@ -16,7 +16,7 @@ class EventListener(ABC):
         for func in self._handlers_functions:
             func(self, event)
 
-    def get_handling_event_types(self):
+    def get_handling_events_types(self):
         for event_type in self.__handling_event_types:
             yield event_type
 

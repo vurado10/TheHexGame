@@ -96,6 +96,6 @@ class SampleScene(Scene):
 
         button.add_handler(click_func)
 
-        self.add_gui_event_handler(button)
+        self.add_gui_element(button)
         self.add_gui_element(lb)
-        self.add_gui_event_handler(ti)
+        self.add_gui_element(ti)

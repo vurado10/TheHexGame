@@ -1,4 +1,4 @@
-from gui_lib.event_manager import EventManager
+from gui_lib.scene import Scene
 
 
 class SceneManager:
@@ -6,11 +6,6 @@ class SceneManager:
         self.current_scene = None
         self.next_scene = next_scene
         self._on_scene_changing = None
-        self._event_manager = EventManager()
-
-    @property
-    def event_manager(self) -> EventManager:
-        return self._event_manager
 
     def switch_scenes(self):
         if self._on_scene_changing is not None:
@@ -24,8 +19,6 @@ class SceneManager:
 
         self.current_scene = self.next_scene
         self.next_scene = None
-
-        self._event_manager.set_scene(self.current_scene)
 
     def set_next_scene(self, next_scene):
         self.next_scene = next_scene

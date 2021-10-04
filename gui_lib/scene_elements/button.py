@@ -1,7 +1,7 @@
 import pygame
 from typing import List
 from gui_lib.figures.figure import Figure
-from gui_lib.scene_elements.event_handlers.event_listener import EventListener
+from gui_lib.scene_elements.event_system.event_listener import EventListener
 from gui_lib.scene_elements.gui_elements.gui_element import GuiElement
 from gui_lib.scene_elements.text_elements.text_element import TextElement
 from pygame import Surface
