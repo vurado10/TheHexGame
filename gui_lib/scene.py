@@ -19,10 +19,9 @@ class Scene(EventListener):
         def exit_game(e, v):
             pygame.quit()
             # sys.exit(0)
-            os._exit(0)
+            os._exit(0) # TODO: it's not safe (but kill all python processes), it is need to delete
 
-        self.add_listening_type(pygame.QUIT)
-        self.add_handler(exit_game)
+        self.add_handler(pygame.QUIT, exit_game)
         self.event_manager.add_listener(self)
 
         self._screen = screen

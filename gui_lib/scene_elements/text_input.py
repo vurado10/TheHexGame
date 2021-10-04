@@ -20,8 +20,31 @@ class TextInput(GuiElement, EventListener, TextElement):
 
         self._is_active = False
 
-        self.add_listening_type(pygame.MOUSEBUTTONDOWN)
-        self.add_listening_type(pygame.KEYDOWN)
+        def on_key_down_text_input(text_input: TextInput, event):
+            if event.key == pygame.K_RETURN:
+                text_input.deactivate()
+                text_input.switch_to_next_state()
+            else:
+                label_builder = text_input.label_builder
+                text = label_builder.text
+                alphabet = "abcdefghijklmnopqrstuvwxyz0123456789_"
+
+                if event.key == pygame.K_SPACE:
+                    label_builder.set_text(text + " ")
+                elif event.key == pygame.K_BACKSPACE:
+                    label_builder.set_text(text[:-1])
+                elif event.unicode.casefold() in alphabet:
+                    label_builder.set_text(text + event.unicode)
+
+        def on_click_text_input(text_input: TextInput, event):
+            if text_input.is_active():
+                return
+
+            text_input.activate()
+            text_input.switch_to_next_state()
+
+        self.add_handler(pygame.MOUSEBUTTONDOWN, on_click_text_input)
+        self.add_handler(pygame.KEYDOWN, on_key_down_text_input)
 
     def activate(self):
         self._is_active = True

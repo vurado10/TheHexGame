@@ -17,7 +17,11 @@ class Button(GuiElement, EventListener, TextElement):
         EventListener.__init__(self)
         TextElement.__init__(self)
 
-        self.add_listening_type(pygame.MOUSEBUTTONDOWN)
+        self.add_handler(pygame.MOUSEBUTTONDOWN,
+                         lambda bt, et: bt.switch_to_next_state())
+
+        self.add_handler(pygame.MOUSEBUTTONUP,
+                         lambda bt, et: bt.switch_to_next_state())
 
     def update_on(self, surface: Surface):
         self.draw_current_state(surface)

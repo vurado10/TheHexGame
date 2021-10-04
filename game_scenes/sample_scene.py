@@ -1,4 +1,3 @@
-import threading
 import time
 import pygame.key
 from gui_lib.figures.rectangle_figure import RectangleFigure
@@ -32,7 +31,7 @@ class SampleScene(Scene):
         button = Button(RectangleFigure(Vector2(250, 250),
                                         Vector2(50, 50),
                                         0.0),
-                        [state_2])
+                        [state_1, state_2])
 
         button.label_builder.set_font_color(RgbColors.LIGHT_GREEN)
         button.label_builder.set_text("Button")
@@ -46,55 +45,11 @@ class SampleScene(Scene):
             RectangleFigure(Vector2(450, 250), Vector2(100, 100), 0.0),
             [state_1, state_2])
 
-        def on_click_text_input(text_input: TextInput, event):
-            nonlocal self
-            if text_input.is_active():
-                return
-
-            text_input.activate()
-            text_input.switch_to_next_state()
-
-        def on_key_down_text_input(text_input: TextInput, event):
-            nonlocal self
-            # TODO: no try-except!
-            try:
-                key = event.key
-            except:
-                return
-            if event.key == pygame.K_KP_ENTER:
-                text_input.deactivate()
-                text_input.switch_to_next_state()
-            else:
-                if event.key == pygame.K_SPACE:
-                    text_input.label_builder.set_text(text_input.label_builder.text + " ")
-                elif event.key == pygame.K_BACKSPACE:
-                    text_input.label_builder.set_text(text_input.label_builder.text[:-1])
-                else:
-                    text_input.label_builder.set_text(text_input.label_builder.text + pygame.key.name(event.key))
-
-        ti.add_handler(on_click_text_input)
-        ti.add_handler(on_key_down_text_input)
-
         def click_func(bt: Button, evt):
             nonlocal lb, ti
             lb.label_builder.set_text(ti.label_builder.text)
-            bt.position += Vector2(-15, -15)
-            bt.switch_to_next_state()
 
-        def wt(bt: Button, evt):
-            def click_func(bt: Button, evt):
-                nonlocal lb, ti
-                lb.label_builder.set_text(ti.label_builder.text)
-                bt.position += Vector2(1, 1)
-                bt.switch_to_next_state()
-            while True:
-                click_func(bt, evt)
-                time.sleep(0.1)
-
-        t = threading.Thread(target=wt, args=(button, None))
-        t.start()
-
-        button.add_handler(click_func)
+        button.add_handler(pygame.MOUSEBUTTONDOWN, click_func)
 
         self.add_gui_element(button)
         self.add_gui_element(lb)
