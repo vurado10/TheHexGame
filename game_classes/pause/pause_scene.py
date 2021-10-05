@@ -1,5 +1,4 @@
 import pygame
-from game_classes.match.arrow_gui_element import ArrowGuiElement
 from gui_lib import app
 from gui_lib.figures.rectangle_figure import RectangleFigure
 from gui_lib.painters.described_figure_painter import DescribedFigurePainter

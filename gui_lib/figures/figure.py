@@ -1,7 +1,5 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import List
-
-from abcmeta import abstractmethod
 from pygame.math import Vector2
 
 
