@@ -6,3 +6,6 @@ class RgbColors:
     BLACK = RgbColor(0, 0, 0)
     LIGHT_GREEN = RgbColor(102, 255, 178)
     DARK_BLUE = RgbColor(0, 31, 63)
+    DARK_GREEN = RgbColor.create_from_string("3CAD49")
+    DARK_GOLD = RgbColor.create_from_string("A69D00")
+    DARK_RED = RgbColor.create_from_string("8F3622")

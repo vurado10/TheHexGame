@@ -8,5 +8,14 @@ class RgbColor:
         self.g = g
         self.b = b
 
+    @staticmethod
+    def create_from_string(hex_str: str):
+        if len(hex_str) != 6:
+            raise ValueError("Hex str length must be 6")
+
+        return RgbColor(int(hex_str[:2], 16),
+                        int(hex_str[2:4], 16),
+                        int(hex_str[4:6], 16))
+
     def convert_to_tuple(self):
         return self.r, self.g, self.b

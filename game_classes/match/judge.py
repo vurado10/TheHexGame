@@ -59,8 +59,7 @@ class Judge:
         self.switch_turn_owner()
 
     def is_win(self) -> [None, PlayerProfile]:
-        current_direction = self.__direction_by_player[
-            self.__players[self.__current_player_index]]
+        current_direction = self.__direction_by_player[self.get_turn_owner()]
 
         if current_direction == Directions.VERTICAL:
             start_cells = self.__field.get_all_cells_in_row(0)
@@ -73,7 +72,7 @@ class Judge:
 
         for start_cell in start_cells:
             if self.__field.check_path_existing_for_owner(
-                    self.__players[self.__current_player_index],
+                    self.get_turn_owner(),
                     start_cell,
                     set(stop_cells)):
                 return True
@@ -84,3 +83,6 @@ class Judge:
         self.__is_over = True
         utilities.execute_all_funcs(self.__on_win_funcs,
                                     winner)
+
+    def get_turn_owner(self) -> PlayerProfile:
+        return self.__players[self.__current_player_index]

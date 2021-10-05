@@ -17,13 +17,13 @@ class PauseScene(Scene):
         self.__pause_button = Button(RectangleFigure(Vector2(50, 40),
                                                      Vector2(40, 40), 0),
                                      [DescribedFigurePainter(
-                                         RgbColors.LIGHT_GREEN,
-                                         RgbColors.BLACK,
-                                         RgbColors.LIGHT_GREEN,
+                                         RgbColors.DARK_GREEN,
+                                         RgbColors.DARK_GREEN,
+                                         RgbColors.DARK_GREEN,
                                          1)])
         self.__pause_button.label_builder.set_text("Resume")
-        self.__pause_button.label_builder.set_font_color(RgbColors.BLACK)
-        self.__pause_button.label_builder.set_font_size(24)
+        self.__pause_button.label_builder.set_font_color(RgbColors.DARK_BLUE)
+        self.__pause_button.label_builder.set_font_size(20)
 
         self.__pause_button.add_handler(pygame.MOUSEBUTTONDOWN,
                                         lambda *args: app.set_current_scene(

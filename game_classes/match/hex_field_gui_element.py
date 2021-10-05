@@ -65,17 +65,15 @@ class HexFieldGuiElement(GuiElement, EventListener):
         last_cell_center = cells_geometry[-1][0]
 
         # TODO: remove dependency by h and radius
+        offset_1 = Vector2(0, -1.5 * radius)
         offset_2 = Vector2(-2 * h, 0)
-        offset_1 = Vector2(0, 1.5 * radius)
 
         self.__markers = [
             ArrowGuiElement(
-                cells_geometry[(self.__field.height - 1)
-                               * self.__field.width][0]
-                + offset_1,
-                last_cell_center + offset_1,
+                first_cell_center + offset_1,
+                cells_geometry[self.__field.width - 1][0] + offset_1,
                 profile.get_player_by_direction(Directions.HORIZONTAL).color,
-                RgbColors.BLACK),
+                profile.bg_color),
             ArrowGuiElement(first_cell_center + offset_2,
                             cells_geometry[(self.__field.height - 1)
                                            * self.__field.width][0]
@@ -83,7 +81,7 @@ class HexFieldGuiElement(GuiElement, EventListener):
                             profile
                             .get_player_by_direction(Directions.VERTICAL)
                             .color,
-                            RgbColors.BLACK)
+                            profile.bg_color)
         ]
 
         cell_default_painter = DescribedFigurePainter(

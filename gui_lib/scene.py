@@ -1,11 +1,10 @@
 import os
-import sys
 import pygame
 from typing import Tuple
-from gui_lib.scene_elements.event_system.event_manager import EventManager
 from gui_lib.rgb_color import RgbColor
 from gui_lib.rgb_colors import RgbColors
 from gui_lib.scene_elements.event_system.event_listener import EventListener
+from gui_lib.scene_elements.event_system.event_manager import EventManager
 from gui_lib.scene_elements.gui_elements.gui_element import GuiElement
 from pygame.event import Event
 from pygame.surface import Surface
@@ -54,10 +53,7 @@ class Scene(EventListener):
 
     def update(self):
         """Update every GuiElement on the scene"""
-        try:
-            self._screen.fill(self._bg_color.convert_to_tuple())
-        except AttributeError:
-            raise Exception(f"{self._bg_color}")
+        self._screen.fill(self._bg_color.convert_to_tuple())
 
         for element in self._gui_elements:
             element.update_on(self._screen)
