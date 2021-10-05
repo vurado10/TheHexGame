@@ -11,9 +11,6 @@ class SceneManager:
         if self._on_scene_changing is not None:
             self._on_scene_changing(self.current_scene, self.next_scene)
 
-        if self.current_scene is not None:
-            self.current_scene.hide()
-
         if self.next_scene is None:
             raise Exception("It can't switch scenes. Next scene is None")
 

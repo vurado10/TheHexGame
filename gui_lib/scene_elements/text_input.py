@@ -1,5 +1,4 @@
 from typing import List
-
 import pygame
 from gui_lib.figures.figure import Figure
 from gui_lib.scene_elements.event_system.event_listener import EventListener

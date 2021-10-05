@@ -16,11 +16,11 @@ class GuiElement(ABC):
         self._figure = figure
 
     @property
-    def position(self) -> Vector2:
+    def center(self) -> Vector2:
         return self._figure.center
 
-    @position.setter
-    def position(self, position: Vector2):
+    @center.setter
+    def center(self, position: Vector2):
         self._figure.center = position
 
     def switch_to_next_state(self):

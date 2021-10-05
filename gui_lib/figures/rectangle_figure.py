@@ -20,11 +20,16 @@ class RectangleFigure(DescribedFigure):
     def vertexes(self):
         half_width, half_height = self.__width / 2, self._height / 2
 
+        pre_vertexes = [
+            Vector2(-half_width, -half_height),
+            Vector2(-half_width, half_height),
+            Vector2(half_width, half_height),
+            Vector2(half_width, -half_height)
+        ]
+
         return [
-            self._center + Vector2(-half_width, -half_height),
-            self._center + Vector2(-half_width, half_height),
-            self._center + Vector2(half_width, half_height),
-            self._center + Vector2(half_width, -half_height)
+            self._center + vertexes.rotate_rad(self._rotation_radians)
+            for vertexes in pre_vertexes
         ]
 
     def scale(self, factor: float):

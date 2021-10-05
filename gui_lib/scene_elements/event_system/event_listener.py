@@ -39,5 +39,5 @@ class EventListener(ABC):
 
     @abstractmethod
     def is_valid_event(self, event: Event) -> bool:
-        """Проверяет, произошло ли событие с данным объектом"""
+        """Checks if an event occurred with the given object"""
         pass

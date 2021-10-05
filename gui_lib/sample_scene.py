@@ -1,4 +1,3 @@
-import time
 import pygame.key
 from gui_lib.figures.rectangle_figure import RectangleFigure
 from gui_lib.painters.described_figure_painter import DescribedFigurePainter
@@ -22,7 +21,7 @@ class SampleScene(Scene):
 
         state_2 = DescribedFigurePainter(RgbColors.BLACK,
                                          RgbColors.WHITE,
-                                         RgbColor(50, 50, 50), 1)
+                                         RgbColor(50, 50, 50), 1.5)
 
         state_label = DescribedFigurePainter(RgbColors.BLACK,
                                              RgbColors.BLACK,
@@ -48,6 +47,7 @@ class SampleScene(Scene):
         def click_func(bt: Button, evt):
             nonlocal lb, ti
             lb.label_builder.set_text(ti.label_builder.text)
+            bt.switch_to_next_state()
 
         button.add_handler(pygame.MOUSEBUTTONDOWN, click_func)
 

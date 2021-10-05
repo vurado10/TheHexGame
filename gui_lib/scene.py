@@ -30,7 +30,7 @@ class Scene(EventListener):
         self._bg_color = RgbColors.BLACK
 
     def is_valid_event(self, event: Event) -> bool:
-        return event.type == pygame.QUIT
+        return True
 
     @property
     def size(self) -> Tuple[int, int]:
@@ -50,6 +50,7 @@ class Scene(EventListener):
             self.event_manager.add_listener(element)
 
     def update(self):
+        """Update every GuiElement on the scene"""
         self._screen.fill(self._bg_color.convert_to_tuple())
 
         for element in self._gui_elements:

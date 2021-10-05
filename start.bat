@@ -1,2 +1,4 @@
-.\Scripts\activate
+@echo off
+
+call .\Scripts\activate
 python main.py
