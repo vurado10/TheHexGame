@@ -100,7 +100,10 @@ class HexField:
                                       start: int,
                                       stop_cells: Set[int]) -> bool:
         deque = collections.deque()
-        deque.append(start)
+        if self.is_occupied(start) and self.get_owner(start) is owner:
+            if start in stop_cells:
+                return True
+            deque.append(start)
         used = set()
 
         while len(deque) != 0:

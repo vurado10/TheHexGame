@@ -20,7 +20,7 @@ class MatchScene(Scene):
 
         players = [Player("Player1"), Player("Player2")]
 
-        self.__field = HexField(11, 11)
+        self.__field = HexField(1, 1)
         self.__judge = Judge(self.__field,
                              players)
 
@@ -74,7 +74,7 @@ class MatchScene(Scene):
                                          RgbColors.LIGHT_GREEN,
                                          1)])
         self.__pause_button.label_builder.set_text("Pause")
-        self.__pause_button.label_builder.set_font_color(RgbColors.BLACK)
+        self.__pause_button.label_builder.set_font_color(RgbColors.WHITE)
         self.__pause_button.label_builder.set_font_size(24)
 
         self.__pause_button.add_handler(pygame.MOUSEBUTTONDOWN,
@@ -82,7 +82,7 @@ class MatchScene(Scene):
                                             "pause"))
 
         def on_win(winner: Player):
-            self.__pause_button.label_builder.set_text("Win!")
+            self.__pause_button.label_builder.set_text(f"winner: {winner.name}")
 
         self.__judge.add_on_win(on_win)
 

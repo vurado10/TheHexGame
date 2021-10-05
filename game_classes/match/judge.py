@@ -15,7 +15,7 @@ class Judge:
 
         self.__field = field
         self.__players = list(players)
-        self.__current_player_index = len(self.__players) - 1
+        self.__current_player_index = 0
         self.__on_switch_turn_owner_funcs = []
         self.__on_win_funcs = []
 
@@ -53,9 +53,7 @@ class Judge:
         self.switch_turn_owner()
 
     def is_win(self) -> [None, Player]:
-        start_cells = stop_cells = []
-
-        if self.__current_player_index == 0:
+        if self.__current_player_index == 1:
             start_cells = self.__field.get_all_cells_in_row(0)
             stop_cells = self.__field.get_all_cells_in_row(
                 self.__field.height - 1)

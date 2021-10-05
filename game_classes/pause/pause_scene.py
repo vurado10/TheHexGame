@@ -1,4 +1,5 @@
 import pygame
+from game_classes.match.arrow_gui_element import ArrowGuiElement
 from gui_lib import app
 from gui_lib.figures.rectangle_figure import RectangleFigure
 from gui_lib.painters.described_figure_painter import DescribedFigurePainter
@@ -28,4 +29,7 @@ class PauseScene(Scene):
                                         lambda *args: app.set_current_scene(
                                             "main"))
 
+        arrow = ArrowGuiElement(Vector2(), Vector2(200, 200), RgbColors.LIGHT_GREEN, RgbColors.BLACK)
+
+        self.add_gui_element(arrow)
         self.add_gui_element(self.__pause_button)

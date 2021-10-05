@@ -1,13 +1,13 @@
 import math
-import pygame
 from typing import List, Dict
+import pygame
+from game_classes.match.arrow_gui_element import ArrowGuiElement
 from game_classes.match.cell_button import CellButton
 from game_classes.match.hex_field import HexField
 from game_classes.match.player import Player
 from gui_lib.figures.rectangle_figure import RectangleFigure
 from gui_lib.painters.described_figure_painter import DescribedFigurePainter
 from gui_lib.rgb_colors import RgbColors
-from gui_lib.scene_elements.button import Button
 from gui_lib.scene_elements.event_system.event_listener import EventListener
 from gui_lib.scene_elements.gui_elements.gui_element import GuiElement
 from pygame.event import Event
@@ -63,38 +63,25 @@ class HexFieldGuiElement(GuiElement, EventListener):
         first_cell_center = cells_geometry[0][0]
         last_cell_center = cells_geometry[-1][0]
 
-        marker_1_figure = RectangleFigure(first_cell_center
-                                          + Vector2(h
-                                                    * (self.__field.height / 2
-                                                       - 3),
-                                                    self.__height_px / 2),
-                                          Vector2(20, 20),
-                                          math.pi / 3)
-        marker_2_figure = RectangleFigure(last_cell_center
-                                          + Vector2(-h * self.__field.width,
-                                                    50),
-                                          Vector2(20, 20),
-                                          0)
+        offset_2 = Vector2(-2 * h, 0)
+        offset_1 = Vector2(0, 1.5 * radius)
 
         self.__markers = [
-            Button(marker_1_figure, [
-                DescribedFigurePainter(
-                    RgbColors.WHITE,
-                    RgbColors.WHITE,
-                    RgbColors.WHITE,
-                    1)
-            ]),
-            Button(marker_2_figure, [
-                DescribedFigurePainter(
-                    RgbColors.LIGHT_GREEN,
-                    RgbColors.LIGHT_GREEN,
-                    RgbColors.LIGHT_GREEN,
-                    1)
-            ])
+            ArrowGuiElement(first_cell_center + offset_2,
+                            cells_geometry[(
+                                                   self.__field.height - 1) * self.__field.width][
+                                0]
+                            + offset_2,
+                            RgbColors.LIGHT_GREEN,
+                            RgbColors.BLACK),
+            ArrowGuiElement(
+                cells_geometry[(self.__field.height - 1) * self.__field.width][
+                    0]
+                + offset_1,
+                last_cell_center + offset_1,
+                RgbColors.WHITE,
+                RgbColors.BLACK),
         ]
-
-        for marker in self.__markers:
-            marker.label_builder.set_text("")
 
         for cell_geometry in cells_geometry:
             cell_center, cell_size, cell_rotation = cell_geometry
@@ -103,7 +90,8 @@ class HexFieldGuiElement(GuiElement, EventListener):
                                      cell_size,
                                      cell_rotation,
                                      cell_default_painter)
-            cell_button.label_builder.set_text(str(len(self.__cells_buttons)))
+
+            # cell_button.label_builder.set_text(str(len(self.__cells_buttons)))
 
             cell_button.add_handler(pygame.MOUSEBUTTONDOWN,
                                     HexFieldGuiElement.__attach_index(
@@ -130,11 +118,11 @@ class HexFieldGuiElement(GuiElement, EventListener):
     def update_on(self, surface: Surface):
         self.draw_current_state(surface)
 
-        for marker in self.__markers:
-            marker.update_on(surface)
-
         for button in self.__cells_buttons:
             button.update_on(surface)
+
+        for marker in self.__markers:
+            marker.update_on(surface)
 
     def __generate_cells_geometry_parameters(self, outside_radius, cell_h):
 
