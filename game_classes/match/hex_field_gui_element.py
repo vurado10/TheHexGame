@@ -103,6 +103,7 @@ class HexFieldGuiElement(GuiElement, EventListener):
                                      cell_size,
                                      cell_rotation,
                                      cell_default_painter)
+            cell_button.label_builder.set_text(str(len(self.__cells_buttons)))
 
             cell_button.add_handler(pygame.MOUSEBUTTONDOWN,
                                     HexFieldGuiElement.__attach_index(

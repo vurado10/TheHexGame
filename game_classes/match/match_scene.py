@@ -81,5 +81,10 @@ class MatchScene(Scene):
                                         lambda *args: app.set_current_scene(
                                             "pause"))
 
+        def on_win(winner: Player):
+            self.__pause_button.label_builder.set_text("Win!")
+
+        self.__judge.add_on_win(on_win)
+
         self.add_gui_element(self.__pause_button)
         self.add_gui_element(self.__hex_field_gui_element)

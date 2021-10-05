@@ -10,4 +10,3 @@ if __name__ == "__main__":
     app.set_current_scene("main")
 
     app.start_main_loop()
-
