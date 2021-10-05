@@ -1,9 +1,11 @@
 import pygame
 from game_classes.match.cell_button import CellButton
+from game_classes.match.directions import Directions
 from game_classes.match.hex_field import HexField
 from game_classes.match.hex_field_gui_element import HexFieldGuiElement
 from game_classes.match.judge import Judge
-from game_classes.match.player import Player
+from game_classes.settings.hex_field_profile import HexFieldProfile
+from game_classes.settings.player_profile import PlayerProfile
 from gui_lib import app
 from gui_lib.figures.rectangle_figure import RectangleFigure
 from gui_lib.painters.described_figure_painter import DescribedFigurePainter
@@ -18,36 +20,23 @@ class MatchScene(Scene):
     def __init__(self, screen: Surface):
         super().__init__(screen)
 
-        players = [Player("Player1"), Player("Player2")]
+        self.set_bg_color(RgbColors.DARK_BLUE)
 
-        self.__field = HexField(1, 1)
+        profile = HexFieldProfile(PlayerProfile("Player1",
+                                                RgbColors.WHITE),
+                                  PlayerProfile("Player2",
+                                                RgbColors.LIGHT_GREEN),
+                                  Directions.HORIZONTAL,
+                                  Directions.VERTICAL,
+                                  self.get_bg_color(),
+                                  RgbColors.BLACK,
+                                  RgbColors.WHITE,
+                                  0.7)
+
+        self.__field = HexField(11, 11)
         self.__judge = Judge(self.__field,
-                             players)
-
-        hex_field_bg_painter = DescribedFigurePainter(RgbColors.BLACK,
-                                               RgbColors.BLACK,
-                                               RgbColors.BLACK,
-                                               1)
-
-        neutral_state = DescribedFigurePainter(RgbColors.BLACK,
-                                               RgbColors.WHITE,
-                                               RgbColors.BLACK,
-                                               0.9)
-
-        player1_state = DescribedFigurePainter(RgbColors.BLACK,
-                                               RgbColors.WHITE,
-                                               RgbColors.WHITE,
-                                               0.7)
-
-        player2_state = DescribedFigurePainter(RgbColors.BLACK,
-                                               RgbColors.WHITE,
-                                               RgbColors.LIGHT_GREEN,
-                                               0.7)
-
-        painter_by_player = {
-            players[0]: player1_state,
-            players[1]: player2_state
-        }
+                             profile.get_players_in_turn_order(),
+                             profile.get_direction_by_player_dict())
 
         def cell_on_click(button: CellButton,
                           event,
@@ -59,12 +48,8 @@ class MatchScene(Scene):
             Vector2(225, 50),
             round(self.size[0] / 1.3),
             round(self.size[1] / 1.3),
-            neutral_state,
-            painter_by_player,
-            cell_on_click,
-            Vector2(50, 50),
-            [hex_field_bg_painter]
-        )
+            profile,
+            cell_on_click)
 
         self.__pause_button = Button(RectangleFigure(Vector2(50, 40),
                                                      Vector2(40, 40), 0),
@@ -81,7 +66,7 @@ class MatchScene(Scene):
                                         lambda *args: app.set_current_scene(
                                             "pause"))
 
-        def on_win(winner: Player):
+        def on_win(winner: PlayerProfile):
             self.__pause_button.label_builder.set_text(f"winner: {winner.name}")
 
         self.__judge.add_on_win(on_win)

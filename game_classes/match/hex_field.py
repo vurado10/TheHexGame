@@ -2,7 +2,7 @@ import collections
 from typing import List, Tuple, Set
 from game_classes import utilities
 from game_classes.match.cell_states import CellStates
-from game_classes.match.player import Player
+from game_classes.settings.player_profile import PlayerProfile
 
 
 class HexField:
@@ -16,8 +16,8 @@ class HexField:
 
     def add_on_cell_owner_changing(self, func):
         """func(int cell_index, Player current_owner, Player next_owner)
-
         current_owner is None if cell doesn't have any owners"""
+
         self.__on_cell_state_changing_funcs.append(func)
 
     def is_occupied(self, cell_index: int):
@@ -26,13 +26,13 @@ class HexField:
         except IndexError:
             raise IndexError(f'on {cell_index}')
 
-    def get_owner(self, cell_index: int) -> Player:
+    def get_owner(self, cell_index: int) -> PlayerProfile:
         try:
             return self.__cells_owners[cell_index]
         except KeyError:
             raise KeyError(f"No owner on index: {cell_index}")
 
-    def set_owner(self, cell_index: int, owner: Player):
+    def set_owner(self, cell_index: int, owner: PlayerProfile):
         current_owner = (self.get_owner(cell_index)
                          if self.is_occupied(cell_index)
                          else None)
@@ -96,7 +96,7 @@ class HexField:
             range(column_index, self.width * self.height, self.width))
 
     def check_path_existing_for_owner(self,
-                                      owner: Player,
+                                      owner: PlayerProfile,
                                       start: int,
                                       stop_cells: Set[int]) -> bool:
         deque = collections.deque()

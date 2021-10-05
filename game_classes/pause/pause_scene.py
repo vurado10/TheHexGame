@@ -29,7 +29,4 @@ class PauseScene(Scene):
                                         lambda *args: app.set_current_scene(
                                             "main"))
 
-        arrow = ArrowGuiElement(Vector2(), Vector2(200, 200), RgbColors.LIGHT_GREEN, RgbColors.BLACK)
-
-        self.add_gui_element(arrow)
         self.add_gui_element(self.__pause_button)

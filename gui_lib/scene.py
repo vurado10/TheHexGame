@@ -39,6 +39,9 @@ class Scene(EventListener):
     def set_bg_color(self, color: RgbColor):
         self._bg_color = color
 
+    def get_bg_color(self) -> RgbColor:
+        return self._bg_color
+
     def get_gui_elements(self):
         for element in self._gui_elements:
             yield element
@@ -51,7 +54,10 @@ class Scene(EventListener):
 
     def update(self):
         """Update every GuiElement on the scene"""
-        self._screen.fill(self._bg_color.convert_to_tuple())
+        try:
+            self._screen.fill(self._bg_color.convert_to_tuple())
+        except AttributeError:
+            raise Exception(f"{self._bg_color}")
 
         for element in self._gui_elements:
             element.update_on(self._screen)

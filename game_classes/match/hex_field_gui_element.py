@@ -1,10 +1,11 @@
 import math
-from typing import List, Dict
 import pygame
 from game_classes.match.arrow_gui_element import ArrowGuiElement
 from game_classes.match.cell_button import CellButton
+from game_classes.match.directions import Directions
 from game_classes.match.hex_field import HexField
-from game_classes.match.player import Player
+from game_classes.settings.hex_field_profile import HexFieldProfile
+from game_classes.settings.player_profile import PlayerProfile
 from gui_lib.figures.rectangle_figure import RectangleFigure
 from gui_lib.painters.described_figure_painter import DescribedFigurePainter
 from gui_lib.rgb_colors import RgbColors
@@ -21,11 +22,8 @@ class HexFieldGuiElement(GuiElement, EventListener):
                  position: Vector2,
                  width_px: int,
                  height_px: int,
-                 cell_default_painter: DescribedFigurePainter,
-                 painter_by_player: Dict[Player, DescribedFigurePainter],
-                 cell_on_click_func,
-                 bg_size: Vector2,
-                 bg_painters: List[DescribedFigurePainter]):
+                 profile: HexFieldProfile,
+                 cell_on_click_func):
         """cell_on_click_func(CellButton button,
                               Event event,
                               int cell_index)"""
@@ -35,8 +33,11 @@ class HexFieldGuiElement(GuiElement, EventListener):
                   + Vector2(0, height_px / 2))
 
         GuiElement.__init__(self,
-                            RectangleFigure(center, bg_size, 0.0),
-                            bg_painters)
+                            RectangleFigure(center, Vector2(), 0.0),
+                            [DescribedFigurePainter(profile.bg_color,
+                                                    profile.bg_color,
+                                                    profile.bg_color,
+                                                    1.0)])
         EventListener.__init__(self)
 
         # It allow to catch mouse click events on hex filed composite
@@ -63,25 +64,33 @@ class HexFieldGuiElement(GuiElement, EventListener):
         first_cell_center = cells_geometry[0][0]
         last_cell_center = cells_geometry[-1][0]
 
+        # TODO: remove dependency by h and radius
         offset_2 = Vector2(-2 * h, 0)
         offset_1 = Vector2(0, 1.5 * radius)
 
         self.__markers = [
-            ArrowGuiElement(first_cell_center + offset_2,
-                            cells_geometry[(
-                                                   self.__field.height - 1) * self.__field.width][
-                                0]
-                            + offset_2,
-                            RgbColors.LIGHT_GREEN,
-                            RgbColors.BLACK),
             ArrowGuiElement(
-                cells_geometry[(self.__field.height - 1) * self.__field.width][
-                    0]
+                cells_geometry[(self.__field.height - 1)
+                               * self.__field.width][0]
                 + offset_1,
                 last_cell_center + offset_1,
-                RgbColors.WHITE,
+                profile.get_player_by_direction(Directions.HORIZONTAL).color,
                 RgbColors.BLACK),
+            ArrowGuiElement(first_cell_center + offset_2,
+                            cells_geometry[(self.__field.height - 1)
+                                           * self.__field.width][0]
+                            + offset_2,
+                            profile
+                            .get_player_by_direction(Directions.VERTICAL)
+                            .color,
+                            RgbColors.BLACK)
         ]
+
+        cell_default_painter = DescribedFigurePainter(
+            profile.bg_color_cell,
+            profile.border_color_cell,
+            profile.bg_color_cell,
+            0.9)
 
         for cell_geometry in cells_geometry:
             cell_center, cell_size, cell_rotation = cell_geometry
@@ -100,9 +109,16 @@ class HexFieldGuiElement(GuiElement, EventListener):
 
             self.__cells_buttons.append(cell_button)
 
+        painter_by_player = {
+            profile.get_player(0):
+                profile.get_painter_for_player(profile.get_player(0)),
+            profile.get_player(1):
+                profile.get_painter_for_player(profile.get_player(1))
+        }
+
         def on_cell_owner_changing(cell_index: int,
-                                   current_owner: Player,
-                                   next_owner: Player):
+                                   current_owner: PlayerProfile,
+                                   next_owner: PlayerProfile):
             button = self.__cells_buttons[cell_index]
             button.set_painter(painter_by_player[next_owner])
 
