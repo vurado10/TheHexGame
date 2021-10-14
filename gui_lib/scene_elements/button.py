@@ -20,10 +20,7 @@ class Button(GuiElement, EventListener, TextElement):
         EventListener.__init__(self)
         TextElement.__init__(self)
 
-        def empty_handler(*args, **kwargs):
-            pass
-
-        self.add_handler(pygame.MOUSEBUTTONDOWN, empty_handler)
+        self.add_handler(pygame.MOUSEBUTTONDOWN, lambda *args: None)
 
     def update_on(self, surface: Surface):
         self.draw_current_state(surface)
@@ -39,11 +36,11 @@ class Button(GuiElement, EventListener, TextElement):
         return self._figure.is_point_inside(Vector2(x, y))
 
     @staticmethod
-    def create_clickable(text: str,
-                         size=Vector2(40, 40),
-                         font_color=RgbColors.DARK_BLUE,
-                         font_size=20,
-                         bg_color=RgbColors.DARK_GREEN):
+    def create(text: str,
+               size=Vector2(40, 40),
+               font_color=RgbColors.DARK_BLUE,
+               font_size=20,
+               bg_color=RgbColors.DARK_GREEN):
         button = Button(RectangleFigure(Vector2(),
                                Vector2(size), 0),
                [DescribedFigurePainter(

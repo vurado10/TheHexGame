@@ -6,16 +6,12 @@ from game_classes.match.directions import Directions
 from game_classes.match.hex_field import HexField
 from game_classes.settings.hex_field_profile import HexFieldProfile
 from game_classes.settings.player_profile import PlayerProfile
-from gui_lib.figures.rectangle_figure import RectangleFigure
 from gui_lib.painters.described_figure_painter import DescribedFigurePainter
-from gui_lib.scene_elements.event_system.event_listener import EventListener
-from gui_lib.scene_elements.gui_elements.gui_element import GuiElement
-from pygame.event import Event
+from gui_lib.scene_elements.widget import Widget
 from pygame.math import Vector2
-from pygame.surface import Surface
 
 
-class HexFieldGuiElement(GuiElement, EventListener):
+class HexFieldWidget(Widget):
     def __init__(self,
                  hex_field: HexField,
                  position: Vector2,
@@ -26,34 +22,18 @@ class HexFieldGuiElement(GuiElement, EventListener):
         """cell_on_click_func(CellButton button,
                               Event event,
                               int cell_index)"""
-
-        center = (position
-                  + Vector2(width_px / 2, 0)
-                  + Vector2(0, height_px / 2))
-
-        GuiElement.__init__(self,
-                            RectangleFigure(center, Vector2(), 0.0),
-                            [DescribedFigurePainter(profile.bg_color,
-                                                    profile.bg_color,
-                                                    profile.bg_color,
-                                                    1.0)])
-        EventListener.__init__(self)
-
-        # It allow to catch mouse click events on hex filed composite
-        # and delegate them to cell buttons
-        self.add_handler(pygame.MOUSEBUTTONDOWN, lambda *args: None)
+        super().__init__(position,
+                         width_px,
+                         height_px,
+                         [pygame.MOUSEBUTTONDOWN])
 
         self.__field = hex_field
-        self.__position = position
-        self.__width_px = width_px
-        self.__height_px = height_px
 
         self.__cells_buttons = []
-        self.__children = []
 
-        radius = min(self.__height_px
+        radius = min(self._height_px
                      / (2 + 3 * (self.__field.height - 1) / 2),
-                     2 * self.__width_px
+                     2 * self._width_px
                      / (3 ** (1 / 2) * (3 * self.__field.width - 1)))
 
         h = radius * 3 ** (1 / 2) / 2
@@ -61,22 +41,21 @@ class HexFieldGuiElement(GuiElement, EventListener):
         cells_geometry = list(
             self.__generate_cells_geometry_parameters(radius, h))
 
-        first_cell_center = cells_geometry[0][0]
+        offset1 = Vector2(0, -20)
+        offset2 = Vector2(-40, 0)
 
-        # TODO: remove dependency by h and radius
-        offset_1 = Vector2(0, -1.5 * radius)
-        offset_2 = Vector2(-2 * h, 0)
+        arrow_vector2 = (cells_geometry[(self.__field.height - 1)
+                                       * self.__field.width][0]
+                        - cells_geometry[0][0])
 
         self.__markers = [
             ArrowGuiElement(
-                first_cell_center + offset_1,
-                cells_geometry[self.__field.width - 1][0] + offset_1,
+                self._position + offset1,
+                Vector2(cells_geometry[self.__field.width - 1][0].x, 0),
                 profile.get_player_by_direction(Directions.HORIZONTAL).color,
                 profile.bg_color),
-            ArrowGuiElement(first_cell_center + offset_2,
-                            cells_geometry[(self.__field.height - 1)
-                                           * self.__field.width][0]
-                            + offset_2,
+            ArrowGuiElement(self._position + cells_geometry[0][0] + offset2,
+                            arrow_vector2,
                             profile
                             .get_player_by_direction(Directions.VERTICAL)
                             .color,
@@ -90,6 +69,7 @@ class HexFieldGuiElement(GuiElement, EventListener):
             0.9)
 
         self.__cell_by_index = {}
+
         for cell_geometry in cells_geometry:
             cell_center, cell_size, cell_rotation = cell_geometry
 
@@ -102,7 +82,7 @@ class HexFieldGuiElement(GuiElement, EventListener):
             self.__cell_by_index[index] = cell_button
 
             cell_button.add_handler(pygame.MOUSEBUTTONDOWN,
-                                    HexFieldGuiElement.__attach_index(
+                                    HexFieldWidget.__attach_index(
                                         cell_on_click_func,
                                         index))
 
@@ -123,33 +103,12 @@ class HexFieldGuiElement(GuiElement, EventListener):
 
         self.__field.add_on_cell_owner_changing(on_cell_owner_changing)
 
-        self.__children += self.__cells_buttons
-        self.__children += self.__markers
+        self.add_children_elements(self.__cells_buttons)
+        self.add_children_listeners(self.__cells_buttons)
+        self.add_children_elements(self.__markers)
 
     def get_cell_by_index(self, index):
         return self.__cell_by_index[index]
-
-    def add_child_gui_element(self, element: GuiElement):
-        self.__children.append(element)
-
-    def notify(self, event: Event):
-        for button in self.__cells_buttons:
-            button.notify(event)
-
-    def is_valid_event(self, event: Event) -> bool:
-        return True
-
-    def update_on(self, surface: Surface):
-        self.draw_current_state(surface)
-
-        # for button in self.__cells_buttons:
-        #     button.update_on(surface)
-        #
-        # for marker in self.__markers:
-        #     marker.update_on(surface)
-
-        for child in self.__children:
-            child.update_on(surface)
 
     def __generate_cells_geometry_parameters(self, outside_radius, cell_h):
 
@@ -157,11 +116,7 @@ class HexFieldGuiElement(GuiElement, EventListener):
         radius = outside_radius
         h = cell_h
 
-        hex_field_offset_x = Vector2(self.__position.x, 0)
-        hex_field_offset_y = Vector2(0, self.__position.y)
-        last_center = (Vector2(h, radius)
-                       + hex_field_offset_y
-                       + hex_field_offset_x)
+        last_center = (Vector2(h, radius))
 
         for i in range(self.__field.height):
             for j in range(self.__field.width):
@@ -170,8 +125,7 @@ class HexFieldGuiElement(GuiElement, EventListener):
                        math.pi / 6)
 
                 last_center += Vector2(2 * h, 0)
-            last_center = (Vector2(h * (i + 2), last_center.y + 3 * radius / 2)
-                           + hex_field_offset_x)
+            last_center = Vector2(h * (i + 2), last_center.y + 3 * radius / 2)
 
     @staticmethod
     def __attach_index(on_click_func, cell_index: int):

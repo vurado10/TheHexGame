@@ -7,6 +7,3 @@ class PlayerProfile:
                  color: RgbColor):
         self.name = name
         self.color = color
-
-    def dump(self, file):
-        f = open()

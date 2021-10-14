@@ -4,7 +4,7 @@ from game_classes.match.cell_button import CellButton
 from game_classes.match.directions import Directions
 from game_classes.match.engine import Engine
 from game_classes.match.hex_field import HexField
-from game_classes.match.hex_field_gui_element import HexFieldGuiElement
+from game_classes.match.hex_field_widget import HexFieldWidget
 from game_classes.settings.hex_field_profile import HexFieldProfile
 from game_classes.settings.player_profile import PlayerProfile
 from gui_lib import app
@@ -69,19 +69,19 @@ class MatchScene(Scene):
             RgbColors.DARK_GREEN)
         self.__turn_owner_label.label_builder.set_font_size(24)
 
-        self.update_turn_owner_label()
+        self.update_move_owner_label()
 
         def cell_on_click(button: CellButton,
                           event,
                           cell_index):
             self.__judge.make_move(cell_index)
-            self.update_turn_owner_label()
+            self.update_move_owner_label()
 
-        self.__hex_field_gui_element = HexFieldGuiElement(
+        self.__hex_field_gui_element = HexFieldWidget(
             self.__field,
-            Vector2(225, 50),
-            round(self.size[0] / 1.3),
-            round(self.size[1] / 1.3),
+            Vector2(180, 40),
+            round(self.size[0] / 1.2),
+            round(self.size[1] / 1.2),
             profile,
             cell_on_click)
 
@@ -96,7 +96,7 @@ class MatchScene(Scene):
                         winner_path))
                 (self
                  .__hex_field_gui_element
-                 .add_child_gui_element(Line(path_centers, WIN_LINE_COLOR)))
+                 .add_child_element(Line(path_centers, WIN_LINE_COLOR)))
             # app.set_current_scene("game over")
 
         self.__judge.add_on_win(on_win)
@@ -105,7 +105,7 @@ class MatchScene(Scene):
         self.add_gui_element(self.__turn_owner_label)
         self.add_gui_element(self.__hex_field_gui_element)
 
-    def update_turn_owner_label(self):
+    def update_move_owner_label(self):
         turn_owner = self.__judge.get_turn_owner()
         self.__turn_owner_label.label_builder.set_font_color(turn_owner.color)
         self.__turn_owner_label.label_builder.set_text(
