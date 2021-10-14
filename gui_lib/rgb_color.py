@@ -4,9 +4,9 @@ class RgbColor:
             if value < 0 or value > 255:
                 raise Exception("rgb color channel must be from 0 to 255")
 
-        self.r = r
-        self.g = g
-        self.b = b
+        self.__r = r
+        self.__g = g
+        self.__b = b
 
     @staticmethod
     def create_from_string(hex_str: str):
@@ -18,4 +18,9 @@ class RgbColor:
                         int(hex_str[4:6], 16))
 
     def convert_to_tuple(self):
-        return self.r, self.g, self.b
+        return self.__r, self.__g, self.__b
+
+    def __iter__(self):
+        yield self.__r
+        yield self.__g
+        yield self.__b

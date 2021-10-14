@@ -1,19 +1,19 @@
 import pygame
+from game_classes.color_theme import *
 from game_classes.match.cell_button import CellButton
 from game_classes.match.directions import Directions
+from game_classes.match.engine import Engine
 from game_classes.match.hex_field import HexField
 from game_classes.match.hex_field_gui_element import HexFieldGuiElement
-from game_classes.match.judge import Judge
 from game_classes.settings.hex_field_profile import HexFieldProfile
 from game_classes.settings.player_profile import PlayerProfile
 from gui_lib import app
 from gui_lib.figures.rectangle_figure import RectangleFigure
 from gui_lib.painters.described_figure_painter import DescribedFigurePainter
-from gui_lib.rgb_color import RgbColor
-from gui_lib.rgb_colors import RgbColors
 from gui_lib.scene import Scene
 from gui_lib.scene_elements.button import Button
 from gui_lib.scene_elements.label import Label
+from gui_lib.scene_elements.line import Line
 from pygame.math import Vector2
 from pygame.surface import Surface
 
@@ -22,14 +22,10 @@ class MatchScene(Scene):
     def __init__(self, screen: Surface):
         super().__init__(screen)
 
-        self.set_bg_color(RgbColors.DARK_BLUE)
+        self.set_bg_color(SCENE_BG_COLOR)
 
-        profile = HexFieldProfile(PlayerProfile("Player1",
-                                                RgbColor
-                                                .create_from_string("AFA825")),
-                                  PlayerProfile("Player2",
-                                                RgbColor
-                                                .create_from_string("C25353")),
+        profile = HexFieldProfile(PlayerProfile("Player1", PLAYER1_COLOR),
+                                  PlayerProfile("Player2", PLAYER2_COLOR),
                                   Directions.HORIZONTAL,
                                   Directions.VERTICAL,
                                   self._bg_color,
@@ -37,10 +33,10 @@ class MatchScene(Scene):
                                   RgbColors.WHITE,
                                   0.7)
 
-        self.__field = HexField(11, 11)
-        self.__judge = Judge(self.__field,
-                             profile.get_players_in_turn_order(),
-                             profile.get_direction_by_player_dict())
+        self.__field = HexField(4, 4)
+        self.__judge = Engine(self.__field,
+                              profile.get_players_in_turn_order(),
+                              profile.get_direction_by_player_dict())
 
         self.__pause_button = Button(RectangleFigure(Vector2(50, 40),
                                                      Vector2(40, 40),
@@ -52,7 +48,7 @@ class MatchScene(Scene):
                                          1)])
         self.__pause_button.label_builder.set_text("Pause")
         self.__pause_button.label_builder.set_font_color(RgbColors.DARK_BLUE)
-        self.__pause_button.label_builder.set_font_size(22)
+        self.__pause_button.label_builder.set_font_size(20)
 
         self.__pause_button.add_handler(pygame.MOUSEBUTTONDOWN,
                                         lambda *args: app.set_current_scene(
@@ -78,21 +74,30 @@ class MatchScene(Scene):
         def cell_on_click(button: CellButton,
                           event,
                           cell_index):
-            self.__judge.make_turn(cell_index)
+            self.__judge.make_move(cell_index)
             self.update_turn_owner_label()
 
         self.__hex_field_gui_element = HexFieldGuiElement(
-                self.__field,
-                Vector2(225, 50),
-                round(self.size[0] / 1.3),
-                round(self.size[1] / 1.3),
-                profile,
-                cell_on_click)
+            self.__field,
+            Vector2(225, 50),
+            round(self.size[0] / 1.3),
+            round(self.size[1] / 1.3),
+            profile,
+            cell_on_click)
 
-        def on_win(winner: PlayerProfile):
-            # self.__pause_button.label_builder.set_text(
-            #     f"{winner.name}")
-            app.set_current_scene("game over")
+        def on_win(winner: PlayerProfile, winner_path: list[int]):
+            if len(winner_path) > 1:
+                path_centers = list(
+                    map(lambda i:
+                        self
+                        .__hex_field_gui_element
+                        .get_cell_by_index(i)
+                        .center,
+                        winner_path))
+                (self
+                 .__hex_field_gui_element
+                 .add_child_gui_element(Line(path_centers, WIN_LINE_COLOR)))
+            # app.set_current_scene("game over")
 
         self.__judge.add_on_win(on_win)
 

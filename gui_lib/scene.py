@@ -1,4 +1,4 @@
-import os
+import sys
 import pygame
 from typing import Tuple
 from gui_lib.rgb_color import RgbColor
@@ -11,14 +11,13 @@ from pygame.surface import Surface
 
 
 class Scene(EventListener):
-    def __init__(self, screen: Surface):
+    def __init__(self, screen: Surface, settings_file_path=""):
         super().__init__()
         self.event_manager = EventManager()
 
         def exit_game(e, v):
             pygame.quit()
-            # sys.exit(0)
-            os._exit(0) # TODO: it's not safe (but kill all python processes), it is need to delete
+            sys.exit(0)
 
         self.add_handler(pygame.QUIT, exit_game)
         self.event_manager.add_listener(self)
@@ -28,12 +27,18 @@ class Scene(EventListener):
 
         self._bg_color = RgbColors.BLACK
 
-    def is_valid_event(self, event: Event) -> bool:
-        return True
+        self._settings_file_path = settings_file_path
 
     @property
     def size(self) -> Tuple[int, int]:
         return self._screen.get_size()
+
+    @property
+    def settings_file_path(self) -> str:
+        return self._settings_file_path
+
+    def is_valid_event(self, event: Event) -> bool:
+        return True
 
     def set_bg_color(self, color: RgbColor):
         self._bg_color = color

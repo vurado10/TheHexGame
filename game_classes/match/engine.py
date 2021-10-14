@@ -5,7 +5,7 @@ from game_classes.match.directions import Directions
 from game_classes.settings.player_profile import PlayerProfile
 
 
-class Judge:
+class Engine:
     """Checks for compliance with the rules of the game"""
 
     def __init__(self,
@@ -13,9 +13,9 @@ class Judge:
                  players: List[PlayerProfile],
                  direction_by_player: Dict[PlayerProfile, int]):
         """first player - horizontal moving, second player - vertical moving"""
-        if len(players) > 2:
+        if len(players) != 2:
             raise ValueError(
-                "players list must have at least 2 Player objects")
+                "players list must have 2 Player objects")
 
         self.__field = field
         self.__players = list(players)
@@ -30,7 +30,7 @@ class Judge:
         self.__on_switch_turn_owner_funcs.append(func)
 
     def add_on_win(self, func):
-        """func(Player winner)"""
+        """func(Player winner, list[Vector2] winner_path)"""
         self.__on_win_funcs.append(func)
 
     def switch_turn_owner(self):
@@ -43,22 +43,19 @@ class Judge:
 
         self.__current_player_index = next_index
 
-    def make_turn(self, cell_index):
+    def make_move(self, cell_index):
         if self.__is_over or self.__field.is_occupied(cell_index):
             return
 
         current_player = self.__players[self.__current_player_index]
 
-        self.__field.set_owner(cell_index,
-                               current_player)
+        self.__field.set_owner(cell_index, current_player)
 
-        if self.is_win():
-            self.register_win(current_player)
-            return
+        self.try_register_win()
 
         self.switch_turn_owner()
 
-    def is_win(self) -> [None, PlayerProfile]:
+    def try_register_win(self) -> [None, PlayerProfile]:
         current_direction = self.__direction_by_player[self.get_turn_owner()]
 
         if current_direction == Directions.VERTICAL:
@@ -71,18 +68,19 @@ class Judge:
                 self.__field.width - 1)
 
         for start_cell in start_cells:
-            if self.__field.check_path_existing_for_owner(
-                    self.get_turn_owner(),
-                    start_cell,
-                    set(stop_cells)):
-                return True
+            path_for_owner = self.__field.get_path_for_owner(
+                self.get_turn_owner(),
+                start_cell,
+                set(stop_cells))
 
-        return False
+            if len(path_for_owner) != 0:
+                self.register_win(self.get_turn_owner(), path_for_owner)
 
-    def register_win(self, winner: PlayerProfile):
+    def register_win(self, winner: PlayerProfile, winner_path: list):
         self.__is_over = True
         utilities.execute_all_funcs(self.__on_win_funcs,
-                                    winner)
+                                    winner,
+                                    winner_path)
 
     def get_turn_owner(self) -> PlayerProfile:
         return self.__players[self.__current_player_index]

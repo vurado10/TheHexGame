@@ -4,6 +4,10 @@ from game_classes.match.hex_field import HexField
 
 
 class HexFieldTests(unittest.TestCase):
+    @staticmethod
+    def make_std_msg(expected, result):
+        return f"expected: {expected}, but was: {result}"
+
     def test_get_adjacent_cells_when_border_cell(self):
         field = HexField(11, 11)
         test_suits = [
@@ -14,16 +18,26 @@ class HexFieldTests(unittest.TestCase):
         ]
 
         for expected, result in test_suits:
+            msg = HexFieldTests.make_std_msg(expected, result)
             self.assertCountEqual(result,
                                   expected,
-                                  msg=f"expected: {expected}, "
-                                      f"but was: {result}")
+                                  msg=msg)
 
     def test_get_adjacent_cells_when_inner_cell(self):
         field = HexField(11, 11)
         result = field.get_adjacent_cells(12)
         expected = [1, 2, 11, 13, 22, 23]
 
+        msg = HexFieldTests.make_std_msg(expected, result)
         self.assertCountEqual(result,
                               expected,
-                              msg=f"expected: {expected}, but was: {result}")
+                              msg=msg)
+
+    def test_get_path_from_tracking(self):
+        input_data = {0: None, 1: 0, 2: 3, 3: 1}
+        result = HexField._get_path_from_tracking(input_data, 3)
+        expected = [0, 1, 3]
+
+        msg = HexFieldTests.make_std_msg(expected, result)
+
+        self.assertSequenceEqual(result, expected, msg=msg)

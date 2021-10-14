@@ -61,12 +61,12 @@ class HexField:
 
     def get_adjacent_cells(self, cell_index) -> List[int]:
         candidates = [
-                cell_index - self.width,
-                cell_index - self.width + 1,
-                cell_index - 1,
-                cell_index + 1,
-                cell_index + self.width - 1,
-                cell_index + self.width
+            cell_index - self.width,
+            cell_index - self.width + 1,
+            cell_index - 1,
+            cell_index + 1,
+            cell_index + self.width - 1,
+            cell_index + self.width
         ]
 
         row_correct_cells = []
@@ -95,27 +95,43 @@ class HexField:
         return list(
             range(column_index, self.width * self.height, self.width))
 
-    def check_path_existing_for_owner(self,
-                                      owner: PlayerProfile,
-                                      start: int,
-                                      stop_cells: Set[int]) -> bool:
+    def get_path_for_owner(self,
+                           owner: PlayerProfile,
+                           start: int,
+                           stop_cells: Set[int]):
         deque = collections.deque()
         if self.is_occupied(start) and self.get_owner(start) is owner:
             if start in stop_cells:
-                return True
+                return [start]
             deque.append(start)
         used = set()
+        tracking_result = {start: None}
 
         while len(deque) != 0:
             current_cell = deque.popleft()
             used.add(current_cell)
-            for adjacent_cell in self.get_adjacent_cells(current_cell):
-                if (self.is_occupied(adjacent_cell)
-                        and self.get_owner(adjacent_cell) is owner):
-                    if adjacent_cell in stop_cells:
-                        return True
+            cells_for_check = ([current_cell]
+                               + self.get_adjacent_cells(current_cell))
+            for checking_cell in cells_for_check:
+                if (self.is_occupied(checking_cell)
+                        and self.get_owner(checking_cell) is owner):
+                    if checking_cell not in used:
+                        tracking_result[checking_cell] = current_cell
 
-                    if adjacent_cell not in used:
-                        deque.append(adjacent_cell)
+                        if checking_cell in stop_cells:
+                            return HexField._get_path_from_tracking(
+                                tracking_result, checking_cell)
 
-        return False
+                        deque.append(checking_cell)
+
+        return []
+
+    @staticmethod
+    def _get_path_from_tracking(tracking_result, stop_cell):
+        result = []
+        current_cell = stop_cell
+        while current_cell is not None:
+            result.append(current_cell)
+            current_cell = tracking_result[current_cell]
+
+        return list(reversed(result))

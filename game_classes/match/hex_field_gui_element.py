@@ -8,7 +8,6 @@ from game_classes.settings.hex_field_profile import HexFieldProfile
 from game_classes.settings.player_profile import PlayerProfile
 from gui_lib.figures.rectangle_figure import RectangleFigure
 from gui_lib.painters.described_figure_painter import DescribedFigurePainter
-from gui_lib.rgb_colors import RgbColors
 from gui_lib.scene_elements.event_system.event_listener import EventListener
 from gui_lib.scene_elements.gui_elements.gui_element import GuiElement
 from pygame.event import Event
@@ -50,6 +49,7 @@ class HexFieldGuiElement(GuiElement, EventListener):
         self.__height_px = height_px
 
         self.__cells_buttons = []
+        self.__children = []
 
         radius = min(self.__height_px
                      / (2 + 3 * (self.__field.height - 1) / 2),
@@ -62,7 +62,6 @@ class HexFieldGuiElement(GuiElement, EventListener):
             self.__generate_cells_geometry_parameters(radius, h))
 
         first_cell_center = cells_geometry[0][0]
-        last_cell_center = cells_geometry[-1][0]
 
         # TODO: remove dependency by h and radius
         offset_1 = Vector2(0, -1.5 * radius)
@@ -90,6 +89,7 @@ class HexFieldGuiElement(GuiElement, EventListener):
             profile.bg_color_cell,
             0.9)
 
+        self.__cell_by_index = {}
         for cell_geometry in cells_geometry:
             cell_center, cell_size, cell_rotation = cell_geometry
 
@@ -98,12 +98,13 @@ class HexFieldGuiElement(GuiElement, EventListener):
                                      cell_rotation,
                                      cell_default_painter)
 
-            # cell_button.label_builder.set_text(str(len(self.__cells_buttons)))
+            index = len(self.__cells_buttons)
+            self.__cell_by_index[index] = cell_button
 
             cell_button.add_handler(pygame.MOUSEBUTTONDOWN,
                                     HexFieldGuiElement.__attach_index(
                                         cell_on_click_func,
-                                        len(self.__cells_buttons)))
+                                        index))
 
             self.__cells_buttons.append(cell_button)
 
@@ -122,6 +123,15 @@ class HexFieldGuiElement(GuiElement, EventListener):
 
         self.__field.add_on_cell_owner_changing(on_cell_owner_changing)
 
+        self.__children += self.__cells_buttons
+        self.__children += self.__markers
+
+    def get_cell_by_index(self, index):
+        return self.__cell_by_index[index]
+
+    def add_child_gui_element(self, element: GuiElement):
+        self.__children.append(element)
+
     def notify(self, event: Event):
         for button in self.__cells_buttons:
             button.notify(event)
@@ -132,11 +142,14 @@ class HexFieldGuiElement(GuiElement, EventListener):
     def update_on(self, surface: Surface):
         self.draw_current_state(surface)
 
-        for button in self.__cells_buttons:
-            button.update_on(surface)
+        # for button in self.__cells_buttons:
+        #     button.update_on(surface)
+        #
+        # for marker in self.__markers:
+        #     marker.update_on(surface)
 
-        for marker in self.__markers:
-            marker.update_on(surface)
+        for child in self.__children:
+            child.update_on(surface)
 
     def __generate_cells_geometry_parameters(self, outside_radius, cell_h):
 
