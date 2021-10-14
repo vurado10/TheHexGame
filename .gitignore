@@ -4,3 +4,4 @@
 /Scripts/*
 /pyvenv.cfg
 *.json
+**__pycache__
