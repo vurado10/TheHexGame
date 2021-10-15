@@ -2,24 +2,24 @@ import math
 import pygame.draw
 from gui_lib.rgb_color import RgbColor
 from gui_lib.scene_elements.gui_elements.gui_element import GuiElement
+from gui_lib.scene_elements.gui_elements.widget import Widget
 from pygame.math import Vector2
 from pygame.surface import Surface
 
 
-class ArrowGuiElement(GuiElement):
+class ArrowWidget(Widget):
     def __init__(self,
                  point_from: Vector2,
                  vector: Vector2,
-                 color: RgbColor,
-                 bg_color: RgbColor):
+                 color: RgbColor):
         self.__vector = Vector2(vector)
 
-        super().__init__()
+        super().__init__(point_from)
         self.__point_from = Vector2(point_from)
         self.__point_to = self.__point_from + self.__vector
         self.__color = color
 
-    def update_on(self, surface: Surface):
+    def update_self_on(self, surface: Surface):
         pygame.draw.aaline(surface,
                            self.__color.convert_to_tuple(),
                            self.__point_from,
