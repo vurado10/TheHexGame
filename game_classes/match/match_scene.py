@@ -8,9 +8,7 @@ from game_classes.match.hex_field_widget import HexFieldWidget
 from game_classes.settings.hex_field_profile import HexFieldProfile
 from game_classes.settings.player_profile import PlayerProfile
 from gui_lib import app
-from gui_lib.painters.hexagon_painter import HexagonPainter
 from gui_lib.scene import Scene
-from gui_lib.scene_elements.gui_elements.abstract_button import AbstractButton
 from gui_lib.scene_elements.gui_elements.label import Label
 from gui_lib.scene_elements.gui_elements.line import Line
 from gui_lib.scene_elements.gui_elements.rect_button import RectButton

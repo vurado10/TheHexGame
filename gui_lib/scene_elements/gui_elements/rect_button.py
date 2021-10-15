@@ -19,5 +19,9 @@ class RectButton(AbstractButton):
         self._label.position += Vector2(10, 15)
         self._label.set_text(text)
 
+    @property
+    def height(self) -> int:
+        return self._figure.height_vector.y
+
     def update_self_on(self, surface: Surface):
         self._figure_painter.draw(surface, self._figure)
