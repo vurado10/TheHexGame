@@ -21,6 +21,10 @@ class Label(Widget, TextElement):
 
         self._image = self.label_builder.build()
 
+    @property
+    def text(self) -> str:
+        return self.label_builder.text
+    
     def set_text(self, text):
         self.label_builder.set_text(text)
         self._image = self.label_builder.build()
