@@ -31,6 +31,10 @@ def add_scene(name: str, scene: Scene):
     __scenes[name] = scene
 
 
+def get_scene_by_name(name: str):
+    return __scenes[name]
+
+
 def set_current_scene(name: str):
     global __current_scene_name
 

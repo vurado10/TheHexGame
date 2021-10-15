@@ -1,7 +1,5 @@
 import math
 import pygame.draw
-from gui_lib.figures.rectangle_figure import RectangleFigure
-from gui_lib.painters.described_figure_painter import DescribedFigurePainter
 from gui_lib.rgb_color import RgbColor
 from gui_lib.scene_elements.gui_elements.gui_element import GuiElement
 from pygame.math import Vector2
@@ -16,11 +14,7 @@ class ArrowGuiElement(GuiElement):
                  bg_color: RgbColor):
         self.__vector = Vector2(vector)
 
-        super().__init__(RectangleFigure(Vector2(), Vector2(), 0.0),
-                         [DescribedFigurePainter(bg_color,
-                                                 bg_color,
-                                                 bg_color,
-                                                 1)])
+        super().__init__()
         self.__point_from = Vector2(point_from)
         self.__point_to = self.__point_from + self.__vector
         self.__color = color

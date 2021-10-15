@@ -5,8 +5,8 @@ from game_classes.color_theme import (
 )
 from gui_lib import app
 from gui_lib.scene import Scene
-from gui_lib.scene_elements.button import Button
-from gui_lib.scene_elements.label import Label
+from gui_lib.scene_elements.gui_elements.abstract_button import AbstractButton
+from gui_lib.scene_elements.gui_elements.label import Label
 from pygame.math import Vector2
 from pygame.surface import Surface
 
@@ -42,10 +42,10 @@ class MenuScene(Scene):
         for button_title in buttons_titles:
             button_center = Vector2(element_center_x, button_center_y)
 
-            button = Button.create(button_title,
-                                   button_size,
-                                   bg_color=BUTTON_BG_COLOR,
-                                   font_color=BUTTON_TEXT_COLOR)
+            button = AbstractButton.create(button_title,
+                                           button_size,
+                                           bg_color=BUTTON_BG_COLOR,
+                                           font_color=BUTTON_TEXT_COLOR)
             button.center = button_center
             self.add_gui_element(button)
             self._buttons[button_title] = button

@@ -1,7 +1,7 @@
 from typing import List, Dict
 
 from game_classes.settings.player_profile import PlayerProfile
-from gui_lib.painters.described_figure_painter import DescribedFigurePainter
+from gui_lib.painters.hexagon_painter import HexagonPainter
 from gui_lib.rgb_color import RgbColor
 
 
@@ -61,7 +61,7 @@ class HexFieldProfile:
         return list(self.__players)
 
     def get_painter_for_player(self, player: PlayerProfile):
-        return DescribedFigurePainter(
+        return HexagonPainter(
                 self.bg_color_cell,
                 self.border_color_cell,
                 player.color,

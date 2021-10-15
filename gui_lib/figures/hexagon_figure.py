@@ -1,42 +1,60 @@
 import math
-from gui_lib.figures.described_figure import DescribedFigure
+from gui_lib.figures.figure import Figure
 from pygame.math import Vector2
 
 
-class HexagonFigure(DescribedFigure):
+class Hexagon(Figure):
     def __init__(self,
                  center: Vector2,
-                 size: Vector2,
+                 radius: float,
                  rotation_radians: float):
-        super(HexagonFigure, self).__init__(center, size, rotation_radians)
+        self.__center = center
+        self.__radius = radius
+        self.__rotation_radians = rotation_radians
 
-        self.__radius = self._size.x
+    @property
+    def center(self):
+        return Vector2(self.__center)
+
+    @center.setter
+    def center(self, value):
+        self.__center = Vector2(value)
 
     @property
     def vertexes(self):
         normalized_vertexes = \
-            self.__get_normalized_vertexes(self._rotation_radians)
+            self.__get_normalized_vertexes(self.__rotation_radians)
 
         return [
-            self._center + self.__radius * vertex
+            self.__center + self.__radius * vertex
             for vertex in normalized_vertexes
         ]
 
     def scale(self, factor: float):
-        return HexagonFigure(self._center,
-                             Vector2(self._size.x * factor,
-                                     self._size.y * factor),
-                             self._rotation_radians)
+        return Hexagon(self.__center,
+                       self.__radius * factor,
+                       self.__rotation_radians)
 
     def rotate(self, radians: float):
-        return HexagonFigure(self._center,
-                             self._size,
-                             self._rotation_radians + radians)
+        return Hexagon(self.__center,
+                       self.__radius,
+                       self.__rotation_radians + radians)
 
     def translate(self, offset: Vector2):
-        return HexagonFigure(self._center + offset,
-                             self._size,
-                             self._rotation_radians)
+        return Hexagon(self.__center + offset,
+                       self.__radius,
+                       self.__rotation_radians)
+
+    # def get_box(self):
+    #     vertexes = self.vertexes
+    #     vertexes_sorted_by_x = sorted(vertexes,
+    #                                   key=lambda v: v.x)
+    #     min_x, max_x = (vertexes_sorted_by_x[0], vertexes_sorted_by_x[-1])
+    #
+    #     vertexes_sorted_by_y = sorted(vertexes,
+    #                                   key=lambda v: v.y)
+    #     min_y, max_y = (vertexes_sorted_by_y[0], vertexes_sorted_by_y[-1])
+    #     return Rectangle()
 
     @staticmethod
     def __get_normalized_vertexes(rotation_angle_radians: float):

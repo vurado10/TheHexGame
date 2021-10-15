@@ -6,9 +6,11 @@ from game_classes.match.directions import Directions
 from game_classes.match.hex_field import HexField
 from game_classes.settings.hex_field_profile import HexFieldProfile
 from game_classes.settings.player_profile import PlayerProfile
-from gui_lib.painters.described_figure_painter import DescribedFigurePainter
-from gui_lib.scene_elements.widget import Widget
+from gui_lib.painters.hexagon_painter import HexagonPainter
+from gui_lib.scene_elements.gui_elements.widget import Widget
+from pygame.event import Event
 from pygame.math import Vector2
+from pygame.surface import Surface
 
 
 class HexFieldWidget(Widget):
@@ -22,14 +24,14 @@ class HexFieldWidget(Widget):
         """cell_on_click_func(CellButton button,
                               Event event,
                               int cell_index)"""
-        super().__init__(position,
-                         width_px,
-                         height_px,
-                         [pygame.MOUSEBUTTONDOWN])
+        super().__init__(position, [pygame.MOUSEBUTTONDOWN])
 
         self.__field = hex_field
 
         self.__cells_buttons = []
+
+        self._height_px = height_px
+        self._width_px = width_px
 
         radius = min(self._height_px
                      / (2 + 3 * (self.__field.height - 1) / 2),
@@ -42,27 +44,17 @@ class HexFieldWidget(Widget):
             self.__generate_cells_geometry_parameters(radius, h))
 
         offset1 = Vector2(0, -20)
-        offset2 = Vector2(-40, 0)
-
-        arrow_vector2 = (cells_geometry[(self.__field.height - 1)
-                                       * self.__field.width][0]
-                        - cells_geometry[0][0])
 
         self.__markers = [
             ArrowGuiElement(
-                self._position + offset1,
-                Vector2(cells_geometry[self.__field.width - 1][0].x, 0),
+                self._position + Vector2(cells_geometry[0][0].x, 0) + offset1,
+                cells_geometry[self.__field.width - 1][0]
+                - cells_geometry[0][0],
                 profile.get_player_by_direction(Directions.HORIZONTAL).color,
-                profile.bg_color),
-            ArrowGuiElement(self._position + cells_geometry[0][0] + offset2,
-                            arrow_vector2,
-                            profile
-                            .get_player_by_direction(Directions.VERTICAL)
-                            .color,
-                            profile.bg_color)
+                profile.bg_color)
         ]
 
-        cell_default_painter = DescribedFigurePainter(
+        cell_default_painter = HexagonPainter(
             profile.bg_color_cell,
             profile.border_color_cell,
             profile.bg_color_cell,
@@ -75,8 +67,9 @@ class HexFieldWidget(Widget):
 
             cell_button = CellButton(cell_center,
                                      cell_size,
-                                     cell_rotation,
-                                     cell_default_painter)
+                                     cell_rotation)
+
+            cell_button.set_painter(cell_default_painter)
 
             index = len(self.__cells_buttons)
             self.__cell_by_index[index] = cell_button
@@ -103,9 +96,8 @@ class HexFieldWidget(Widget):
 
         self.__field.add_on_cell_owner_changing(on_cell_owner_changing)
 
-        self.add_children_elements(self.__cells_buttons)
-        self.add_children_listeners(self.__cells_buttons)
-        self.add_children_elements(self.__markers)
+        # self.add_children_elements(self.__markers)
+        self.add_children(self.__cells_buttons)
 
     def get_cell_by_index(self, index):
         return self.__cell_by_index[index]
@@ -133,3 +125,9 @@ class HexFieldWidget(Widget):
             on_click_func(button, event, index)
 
         return wrap
+
+    def update_self_on(self, surface: Surface):
+        pass
+
+    def is_valid_event(self, event: Event) -> bool:
+        return True

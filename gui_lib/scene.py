@@ -61,4 +61,7 @@ class Scene(EventListener):
         self._screen.fill(self._bg_color.convert_to_tuple())
 
         for element in self._gui_elements:
+            if element.is_hide():
+                continue
+
             element.update_on(self._screen)

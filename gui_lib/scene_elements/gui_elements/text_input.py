@@ -59,8 +59,8 @@ class TextInput(GuiElement, EventListener, TextElement):
 
         label = self.label_builder.build()
         surface.blit(label,
-                     (self._figure.center.x - label.get_width() / 2,
-                      self._figure.center.y - label.get_height() / 2))
+                     (self._rect.center.x - label.get_width() / 2,
+                      self._rect.center.y - label.get_height() / 2))
 
     def is_valid_event(self, event: Event) -> bool:
         is_clicked = False
@@ -68,7 +68,7 @@ class TextInput(GuiElement, EventListener, TextElement):
         if event.type == pygame.MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
 
-            is_clicked = self._figure.is_point_inside(Vector2(x, y))
+            is_clicked = self._rect.is_point_inside(Vector2(x, y))
 
         return is_clicked or self.is_active()
 

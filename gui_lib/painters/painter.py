@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+
+import pygame
 from gui_lib.figures.figure import Figure
 from gui_lib.rgb_color import RgbColor
 from pygame import Surface
@@ -19,4 +21,8 @@ class Painter(ABC):
     def draw(self, surface: Surface, figure: Figure) -> None:
         pass
 
-
+    def _draw_border(self, surface: Surface, vertexes) -> None:
+        pygame.draw.aalines(surface,
+                            tuple(self._border_color),
+                            True,
+                            vertexes)
