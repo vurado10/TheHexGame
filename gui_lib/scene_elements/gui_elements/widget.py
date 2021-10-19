@@ -21,6 +21,7 @@ class Widget(GuiElement, EventListener, ABC):
         self._children = []
         self._position = Vector2(position)
 
+    # TODO: get/set methods instead properties
     @property
     def position(self):
         return Vector2(self._position)
@@ -56,9 +57,16 @@ class Widget(GuiElement, EventListener, ABC):
         for child in self._children:
             child.notify(event)
 
+    def hide(self):
+        self._is_hide = True
+        self._is_working = False
+
+    def show(self):
+        self._is_hide = False
+        self._is_working = True
+
     def is_valid_event(self, event: Event) -> bool:
         return False
 
-    @abstractmethod
     def update_self_on(self, surface: Surface):
         pass

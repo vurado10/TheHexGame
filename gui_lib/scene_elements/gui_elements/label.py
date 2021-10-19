@@ -29,6 +29,10 @@ class Label(Widget, TextElement):
     def height(self) -> int:
         return self._image.get_height()
 
+    @property
+    def width(self) -> int:
+        return self._image.get_width()
+
     def set_text(self, text):
         self.label_builder.set_text(text)
         self._image = self.label_builder.build()

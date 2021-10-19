@@ -43,9 +43,21 @@ def set_current_scene(name: str):
     scene_manager.switch_scenes()
 
 
+def create_scene(name: str, scene_type, *args, **kwargs):
+    add_scene(name, scene_type(screen, *args, **kwargs))
+
+
+def create_and_set_scene(name: str, scene_type, *args, **kwargs):
+    create_scene(name, scene_type, *args, **kwargs)
+    set_current_scene(name)
+
+
 def start_main_loop():
     while True:
         clock.tick(fps)
+
+        if scene_manager.current_scene is None:
+            raise ValueError("Current scene is None")
 
         events = pygame.event.get()
         scene_manager.current_scene.event_manager.handle_events_queue(events)

@@ -1,30 +1,45 @@
 from typing import List, Dict
 from game_classes import utilities
-from game_classes.match.hex_field import HexField
-from game_classes.match.directions import Directions
-from game_classes.settings.player_profile import PlayerProfile
+from game_classes.game_domain.directions import Directions
+from game_classes.game_domain.hex_field import HexField
+from game_classes.game_domain.player_profile import PlayerProfile
 
 
-class Engine:
-    """Checks for compliance with the rules of the game"""
-
+class Match:
+    """Game match model"""
     def __init__(self,
+                 game_id: str,
                  field: HexField,
                  players: List[PlayerProfile],
-                 direction_by_player: Dict[PlayerProfile, int]):
+                 direction_by_player_name: Dict[str, int]):
         """first player - horizontal moving, second player - vertical moving"""
         if len(players) != 2:
             raise ValueError(
                 "players list must have 2 Player objects")
 
+        if players[0].name == players[1].name:
+            raise ValueError("players must have different names, "
+                             f"but their names are {players[0].name}")
+
+        self._game_id = game_id
         self._field = field
         self._players = list(players)
-        self._direction_by_player = dict(direction_by_player)
+        self._direction_by_player_name = dict(direction_by_player_name)
         self._current_player_index = 0
         self._on_switch_turn_owner_funcs = []
         self._on_win_funcs = []
         self._is_over = False
         self._winner_path = []
+
+    @property
+    def field(self):
+        return self._field
+
+    def get_players_in_turn_order(self):
+        return list(self._players)
+
+    def get_direction_by_player_name_dict(self):
+        return dict(self._direction_by_player_name)
 
     def add_on_switch_turn_owner(self, func):
         """func(Player current_player, Player next_player)"""
@@ -34,7 +49,7 @@ class Engine:
         """func(Player winner, list[Vector2] winner_path)"""
         self._on_win_funcs.append(func)
 
-    def is_game_over(self):
+    def is_over(self):
         return self._is_over
 
     def switch_turn_owner(self):
@@ -59,8 +74,9 @@ class Engine:
 
         self.switch_turn_owner()
 
-    def try_register_win(self) -> [None, PlayerProfile]:
-        current_direction = self._direction_by_player[self.get_turn_owner()]
+    def try_register_win(self):
+        current_direction = \
+            self._direction_by_player_name[self.get_turn_owner().name]
 
         if current_direction == Directions.VERTICAL:
             start_cells = self._field.get_all_cells_in_row(0)
@@ -89,3 +105,16 @@ class Engine:
 
     def get_turn_owner(self) -> PlayerProfile:
         return self._players[self._current_player_index]
+
+    # def save(self):
+    #     with open("hex_field_state.json", "w") as file:
+    #         file.write(self.serialize())
+    #
+    # def serialize(self):
+    #     data = {
+    #         "field": self._field.serialize(),
+    #         "is_over": self._is_over,
+    #         "winner_path": self._winner_path,
+    #     }
+    #
+    #     return json.dumps(data)

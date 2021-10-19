@@ -17,6 +17,11 @@ class CellButton(AbstractButton):
                          HexagonPainter(RgbColors.BLACK,
                                         RgbColors.BLACK,
                                         RgbColors.BLACK, 1.0))
+        self._figure.center += self.position
+
+    @property
+    def center(self):
+        return self._figure.center
 
     def set_painter(self, painter: HexagonPainter):
         self._figure_painter = painter

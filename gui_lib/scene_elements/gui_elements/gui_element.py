@@ -3,7 +3,7 @@ from pygame.surface import Surface
 
 
 class GuiElement(ABC):
-    """Drawing element"""
+    """Object drawing every frame of scene"""
     def __init__(self):
         self._is_hide = False
 

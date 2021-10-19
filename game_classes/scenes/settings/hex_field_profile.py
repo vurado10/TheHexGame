@@ -1,6 +1,6 @@
 from typing import List, Dict
 
-from game_classes.settings.player_profile import PlayerProfile
+from game_classes.game_domain.player_profile import PlayerProfile
 from gui_lib.painters.hexagon_painter import HexagonPainter
 from gui_lib.rgb_color import RgbColor
 

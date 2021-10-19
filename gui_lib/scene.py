@@ -56,6 +56,13 @@ class Scene(EventListener):
         if isinstance(element, EventListener):
             self.event_manager.add_listener(element)
 
+    def add_gui_elements(self, elements: list[GuiElement]):
+        for element in elements:
+            self.add_gui_element(element)
+
+    def on_hide(self):
+        pass
+
     def update(self):
         """Update every GuiElement on the scene"""
         self._screen.fill(self._bg_color.convert_to_tuple())

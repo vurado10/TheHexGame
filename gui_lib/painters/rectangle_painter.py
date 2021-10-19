@@ -3,6 +3,7 @@ from gui_lib.figures.rectangle import Rectangle
 from gui_lib.painters.painter import Painter
 from gui_lib.rgb_color import RgbColor
 from pygame import Surface
+from pygame.math import Vector2
 
 
 class RectanglePainter(Painter):
@@ -21,6 +22,10 @@ class RectanglePainter(Painter):
         self._draw_border(surface, figure.vertexes)
 
         inner_figure = figure.scale(self._padding_factor)
+        inner_figure.position += Vector2((figure.width_vector.x
+                                         - inner_figure.width_vector.x) / 2,
+                                        (figure.height_vector.y
+                                         - inner_figure.height_vector.y) / 2)
         self.__draw_with_filling(surface,
                                  inner_figure.vertexes,
                                  self._fill_color)

@@ -1,8 +1,9 @@
 import collections
+import json
 from typing import List, Tuple, Set
 from game_classes import utilities
-from game_classes.match.cell_states import CellStates
-from game_classes.settings.player_profile import PlayerProfile
+from game_classes.game_domain.cell_states import CellStates
+from game_classes.game_domain.player_profile import PlayerProfile
 
 
 class HexField:
@@ -125,6 +126,23 @@ class HexField:
                         deque.append(checking_cell)
 
         return []
+
+    # def save(self):
+    #     with open("hex_field_state.json", "w") as file:
+    #         file.write(self.serialize())
+    #
+    # def serialize(self):
+    #     data = {
+    #         "states": self.__cells_states,
+    #         "owners": self.__cells_owners,
+    #         "width": self.width,
+    #         "height": self.height
+    #     }
+    #
+    #     return json.dumps(data)
+    #
+    # def load(self):
+    #     pass
 
     @staticmethod
     def _get_path_from_tracking(tracking_result, stop_cell):

@@ -6,6 +6,7 @@ class EventListener(ABC):
     def __init__(self):
         self.__handling_event_types = set()
         self._handlers_functions_by_event_type = {}
+        self._is_working = True
 
     def notify(self, event: Event):
         if not self.is_valid_event(event):
@@ -16,6 +17,15 @@ class EventListener(ABC):
                 func(self, event)
         except KeyError:
             return
+
+    def turn_off(self):
+        self._is_working = False
+
+    def turn_on(self):
+        self._is_working = True
+
+    def is_working(self) -> bool:
+        return self._is_working
 
     def get_handling_events_types(self):
         for event_type in self.__handling_event_types:

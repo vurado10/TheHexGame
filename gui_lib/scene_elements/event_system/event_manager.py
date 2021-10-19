@@ -29,4 +29,5 @@ class EventManager:
                 event.type)
 
             for listener in listeners:
-                listener.notify(event)
+                if listener.is_working():
+                    listener.notify(event)

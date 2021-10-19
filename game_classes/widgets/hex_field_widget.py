@@ -1,11 +1,11 @@
 import math
 import pygame
-from game_classes.match.arrow_gui_element import ArrowGuiElement
-from game_classes.match.cell_button import CellButton
-from game_classes.match.directions import Directions
-from game_classes.match.hex_field import HexField
-from game_classes.settings.hex_field_profile import HexFieldProfile
-from game_classes.settings.player_profile import PlayerProfile
+from game_classes.game_domain.directions import Directions
+from game_classes.game_domain.hex_field import HexField
+from game_classes.game_domain.player_profile import PlayerProfile
+from game_classes.scenes.settings.hex_field_profile import HexFieldProfile
+from game_classes.widgets.arrow_widget import ArrowWidget
+from game_classes.widgets.cell_button import CellButton
 from gui_lib.painters.hexagon_painter import HexagonPainter
 from gui_lib.scene_elements.gui_elements.widget import Widget
 from pygame.event import Event
@@ -46,12 +46,11 @@ class HexFieldWidget(Widget):
         offset1 = Vector2(0, -20)
 
         self.__markers = [
-            ArrowGuiElement(
+            ArrowWidget(
                 self._position + Vector2(cells_geometry[0][0].x, 0) + offset1,
                 cells_geometry[self.__field.width - 1][0]
                 - cells_geometry[0][0],
-                profile.get_player_by_direction(Directions.HORIZONTAL).color,
-                profile.bg_color)
+                profile.get_player_by_direction(Directions.HORIZONTAL).color)
         ]
 
         cell_default_painter = HexagonPainter(
@@ -67,7 +66,8 @@ class HexFieldWidget(Widget):
 
             cell_button = CellButton(cell_center,
                                      cell_size,
-                                     cell_rotation)
+                                     cell_rotation,
+                                     self.position)
 
             cell_button.set_painter(cell_default_painter)
 
@@ -96,8 +96,8 @@ class HexFieldWidget(Widget):
 
         self.__field.add_on_cell_owner_changing(on_cell_owner_changing)
 
-        # self.add_children_elements(self.__markers)
         self.add_children(self.__cells_buttons)
+        self.add_children(self.__markers)
 
     def get_cell_by_index(self, index):
         return self.__cell_by_index[index]

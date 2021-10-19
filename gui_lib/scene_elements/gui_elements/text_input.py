@@ -1,4 +1,5 @@
 import pygame
+from game_classes import utilities
 from gui_lib.figures.rectangle import Rectangle
 from gui_lib.painters.rectangle_painter import RectanglePainter
 from gui_lib.rgb_colors import RgbColors
@@ -10,31 +11,40 @@ from pygame.surface import Surface
 
 
 class TextInput(Widget):
-    def __init__(self, position: Vector2, width_px, height_px):
+    def __init__(self, position: Vector2,
+                 width_px, height_px,
+                 max_length=20,
+                 bg_color=RgbColors.DARK_RED):
         super().__init__(position, [pygame.MOUSEBUTTONDOWN, pygame.KEYDOWN])
 
         self._bg_figure = Rectangle(position, width_px, height_px)
-        self._bg_painter = RectanglePainter(RgbColors.DARK_RED,
-                                            RgbColors.DARK_RED,
-                                            RgbColors.DARK_RED,
+        self._bg_painter = RectanglePainter(bg_color,
+                                            bg_color,
+                                            bg_color,
                                             1.0)
-        self._label = Label("placeholder", RgbColors.WHITE)
+
+        self._max_length = max_length
+        self._label = Label("", RgbColors.WHITE)
+        self._label.position = Vector2(5, self._label.position.y)
         self.add_child(self._label)
 
         self._is_active = False
+        self._on_activate = []
+        self._on_deactivate = []
 
         def on_key_down_text_input(text_input: TextInput, event):
             if event.key == pygame.K_RETURN:
                 text_input.deactivate()
             else:
-                text = self._label.label_builder.text
+                text = self._label.text
                 alphabet = "abcdefghijklmnopqrstuvwxyz0123456789_"
-
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_SPACE \
+                        and len(text) + 1 < self._max_length:
                     self._label.set_text(text + " ")
                 elif event.key == pygame.K_BACKSPACE:
                     self._label.set_text(text[:-1])
-                elif event.unicode.casefold() in alphabet:
+                elif event.unicode.casefold() in alphabet \
+                        and len(text) + 1 < self._max_length:
                     self._label.set_text(text + event.unicode)
 
         def on_click_text_input(text_input: TextInput, event):
@@ -50,10 +60,24 @@ class TextInput(Widget):
     def text(self) -> str:
         return self._label.text
 
+    @text.setter
+    def text(self, value: str):
+        self._label.set_text(value)
+
+    def add_on_activate(self, func):
+        """func(TextInput text_input)"""
+        self._on_activate.append(func)
+
+    def add_on_deactivate(self, func):
+        """func(TextInput text_input)"""
+        self._on_deactivate.append(func)
+
     def activate(self):
+        utilities.execute_all_funcs(self._on_activate, self)
         self._is_active = True
 
     def deactivate(self):
+        utilities.execute_all_funcs(self._on_deactivate, self)
         self._is_active = False
 
     def is_active(self) -> bool:
@@ -71,4 +95,3 @@ class TextInput(Widget):
             is_clicked = self._bg_figure.is_point_inside(Vector2(x, y))
 
         return is_clicked or self.is_active()
-
