@@ -1,13 +1,21 @@
 import pygame
-from game_classes import color_theme
+from gui_lib.rgb_colors import RgbColors
 from gui_lib.scene_elements.gui_elements.toggle_button import ToggleButton
 from gui_lib.scene_elements.gui_elements.widget import Widget
 from pygame.event import Event
 from pygame.math import Vector2
 
 
+class RgbColor:
+    pass
+
+
 class RadioBox(Widget):
-    def __init__(self, position: Vector2, variants_values: list[str]):
+    def __init__(self,
+                 position: Vector2,
+                 variants_values: list[str],
+                 toggles_active_color: RgbColor = RgbColors.BLACK,
+                 toggles_inactive_color: RgbColor = RgbColors.WHITE):
         super().__init__(position, [pygame.MOUSEBUTTONDOWN])
 
         self.__toggle_by_value = {}
@@ -19,8 +27,8 @@ class RadioBox(Widget):
                                   last_position,
                                   80,
                                   30,
-                                  color_theme.BUTTON_BG_COLOR,
-                                  color_theme.SCENE_BG_COLOR)
+                                  toggles_active_color,
+                                  toggles_inactive_color)
 
             last_position += Vector2(80 + 10, 0)
 

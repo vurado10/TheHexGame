@@ -1,6 +1,8 @@
 import pygame
 from game_classes.scenes.match_scene import MatchScene
 from game_classes.scenes.menu_scene import MenuScene
+from game_classes.scenes.rating_scene import RatingScene
+from game_classes.scenes.savings_list_scene import SavingsListScene
 from game_classes.scenes.settings_scene import SettingsScene
 from gui_lib import app
 from pygame.event import Event
@@ -17,17 +19,10 @@ class MainMenuScene(MenuScene):
                                                MainMenuScene.start_new_game)
 
         self._buttons["Load"].add_handler(pygame.MOUSEBUTTONDOWN,
-                                          lambda *args: app.set_current_scene(
-                                              "savings list"))
-
-        # self._buttons["Settings"].add_handler(pygame.MOUSEBUTTONDOWN,
-        #                                       lambda *args:
-        #                                       app.set_current_scene(
-        #                                           "settings"))
+                                          MainMenuScene.load_game)
 
         self._buttons["Rating"].add_handler(pygame.MOUSEBUTTONDOWN,
-                                            lambda *args:
-                                            app.set_current_scene("rating"))
+                                            MainMenuScene.show_rating)
 
         self._buttons["Exit"].add_handler(pygame.MOUSEBUTTONDOWN,
                                           lambda *args: pygame.event.post(
@@ -36,3 +31,11 @@ class MainMenuScene(MenuScene):
     @staticmethod
     def start_new_game(*args):
         app.create_and_set_scene("settings", SettingsScene)
+
+    @staticmethod
+    def load_game(*args):
+        app.create_and_set_scene("savings list", SavingsListScene)
+
+    @staticmethod
+    def show_rating(*args):
+        app.create_and_set_scene("rating", RatingScene)

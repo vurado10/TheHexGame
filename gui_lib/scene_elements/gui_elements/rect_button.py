@@ -17,13 +17,20 @@ class RectButton(AbstractButton):
                          Rectangle(position, width_px, height_px),
                          RectanglePainter(bg_color, bg_color, bg_color, 1.0))
 
-        self._label.set_text(text)
         self._label.set_font_color(text_color)
-        self._label.position += (self
-            ._figure
-            .get_relative_centered_position(self._label.width,
-                                            self._label.height))
+        self.set_text(text)
+
+    def set_text(self, text):
+        self._label.set_text(text)
+        self._label.position = (self
+                                ._figure
+                                .get_centered_position(self._label.width,
+                                                       self._label.height))
 
     @property
     def height(self) -> int:
         return self._figure.height
+
+    @property
+    def width(self) -> int:
+        return self._figure.width

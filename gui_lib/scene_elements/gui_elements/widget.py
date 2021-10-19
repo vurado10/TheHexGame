@@ -28,7 +28,14 @@ class Widget(GuiElement, EventListener, ABC):
 
     @position.setter
     def position(self, value: Vector2):
+        self.set_position(value)
+
+    def set_position(self, value):
+        prev_position = self._position
         self._position = Vector2(value)
+
+        for child in self._children:
+            child.position += self._position - prev_position
 
     @property
     def children(self):
@@ -43,12 +50,18 @@ class Widget(GuiElement, EventListener, ABC):
             self.add_child(widget)
 
     def update_on(self, surface: Surface):
+        if self.is_hide():
+            return
+
         self.update_self_on(surface)
 
         for child in self._children:
             child.update_on(surface)
 
     def notify(self, event: Event):
+        if not self.is_working():
+            return
+
         if not self.is_valid_event(event):
             return
 

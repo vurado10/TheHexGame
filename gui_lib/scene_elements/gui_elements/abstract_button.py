@@ -32,12 +32,8 @@ class AbstractButton(Widget, ABC):
 
     @position.setter
     def position(self, value: Vector2):
-        prev_position = self._position
-        self._position = Vector2(value)
+        Widget.set_position(self, value)
         self._figure.position = self._position
-
-        for child in self.children:
-            child.position += self._position - prev_position
 
     def is_valid_event(self, event: Event) -> bool:
         x, y = pygame.mouse.get_pos()

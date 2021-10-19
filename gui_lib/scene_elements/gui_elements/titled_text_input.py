@@ -23,6 +23,6 @@ class TitledTextInput(TextInput):
         self._label.set_font_color(input_text_color)
 
         self.__title_label = Label(title, title_color)
-        self.__title_label.position = Vector2(0, -25)
+        self.__title_label.position = Vector2(0, -30)
 
         self.add_child(self.__title_label)

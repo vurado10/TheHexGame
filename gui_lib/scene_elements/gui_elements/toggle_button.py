@@ -1,9 +1,7 @@
 import pygame
-from gui_lib.figures.rectangle import Rectangle
 from gui_lib.painters.rectangle_painter import RectanglePainter
 from gui_lib.rgb_color import RgbColor
 from gui_lib.rgb_colors import RgbColors
-from gui_lib.scene_elements.gui_elements.abstract_button import AbstractButton
 from gui_lib.scene_elements.gui_elements.rect_button import RectButton
 from pygame.event import Event
 from pygame.math import Vector2

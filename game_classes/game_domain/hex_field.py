@@ -1,7 +1,6 @@
 import collections
-import json
 from typing import List, Tuple, Set
-from game_classes import utilities
+from gui_lib import utilities
 from game_classes.game_domain.cell_states import CellStates
 from game_classes.game_domain.player_profile import PlayerProfile
 

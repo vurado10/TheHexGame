@@ -1,5 +1,5 @@
 import pygame
-from game_classes import utilities
+from gui_lib import utilities
 from gui_lib.figures.rectangle import Rectangle
 from gui_lib.painters.rectangle_painter import RectanglePainter
 from gui_lib.rgb_colors import RgbColors

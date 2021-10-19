@@ -1,5 +1,5 @@
 from typing import List, Dict
-from game_classes import utilities
+from gui_lib import utilities
 from game_classes.game_domain.directions import Directions
 from game_classes.game_domain.hex_field import HexField
 from game_classes.game_domain.player_profile import PlayerProfile

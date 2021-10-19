@@ -48,6 +48,11 @@ class Rectangle(Figure):
         return Vector2((self.width - element_width) / 2,
                        (self.height - element_height) / 2)
 
+    def get_centered_position(self, element_width, element_height) -> Vector2:
+        return self.position \
+               + self.get_relative_centered_position(element_width,
+                                                     element_height)
+
     def scale(self, factor):
         return Rectangle(self.__position,
                          self.__width_px * factor,
