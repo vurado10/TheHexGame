@@ -26,7 +26,7 @@ class Match:
         self._players = list(players)
         self._direction_by_player_name = dict(direction_by_player_name)
         self._current_player_index = 0
-        self._on_switch_turn_owner_funcs = []
+        self._on_switch_move_owner_funcs = []
         self._on_win_funcs = []
         self._is_over = False
         self._winner_path = []
@@ -41,9 +41,27 @@ class Match:
     def get_direction_by_player_name_dict(self):
         return dict(self._direction_by_player_name)
 
-    def add_on_switch_turn_owner(self, func):
+    def get_player_by_direction(self, direction: int):
+        if self._direction_by_player_name[self._players[0].name] == direction:
+            return self._players[0]
+        elif (self._direction_by_player_name[self._players[1].name]
+              == direction):
+            return self._players[1]
+
+    def get_player(self, move_order_index: int):
+        return self._players[move_order_index]
+
+    def get_move_order_index_by_player_name(self, name):
+        if self._players[0].name == name:
+            return 0
+        elif self._players[1].name == name:
+            return 1
+
+        raise ValueError(f"No player with name {name}")
+
+    def add_on_switch_move_owner(self, func):
         """func(Player current_player, Player next_player)"""
-        self._on_switch_turn_owner_funcs.append(func)
+        self._on_switch_move_owner_funcs.append(func)
 
     def add_on_win(self, func):
         """func(Player winner, list[Vector2] winner_path)"""
@@ -52,19 +70,19 @@ class Match:
     def is_over(self):
         return self._is_over
 
-    def switch_turn_owner(self):
-        next_index = (self._current_player_index + 1) % len(self._players)
+    def switch_move_owner(self):
+        prev_index = self._current_player_index
+        self._current_player_index = \
+            (self._current_player_index + 1) % len(self._players)
 
-        utilities.execute_all_funcs(self._on_switch_turn_owner_funcs,
+        utilities.execute_all_funcs(self._on_switch_move_owner_funcs,
+                                    self._players[prev_index],
                                     self._players[
-                                        self._current_player_index],
-                                    self._players[next_index])
+                                        self._current_player_index])
 
-        self._current_player_index = next_index
-
-    def make_move(self, cell_index):
+    def make_move(self, cell_index) -> bool:
         if self._is_over or self._field.is_occupied(cell_index):
-            return
+            return False
 
         current_player = self._players[self._current_player_index]
 
@@ -72,11 +90,20 @@ class Match:
 
         self.try_register_win()
 
-        self.switch_turn_owner()
+        if not self.is_over():
+            self.switch_move_owner()
+
+        return True
 
     def try_register_win(self):
+        winner_path = self.get_winner_path()
+
+        if winner_path:
+            self.register_win(self.get_move_owner(), winner_path)
+
+    def get_winner_path(self):
         current_direction = \
-            self._direction_by_player_name[self.get_turn_owner().name]
+            self._direction_by_player_name[self.get_move_owner().name]
 
         if current_direction == Directions.VERTICAL:
             start_cells = self._field.get_all_cells_in_row(0)
@@ -89,12 +116,14 @@ class Match:
 
         for start_cell in start_cells:
             path_for_owner = self._field.get_path_for_owner(
-                self.get_turn_owner(),
+                self.get_move_owner(),
                 start_cell,
                 set(stop_cells))
 
             if len(path_for_owner) != 0:
-                self.register_win(self.get_turn_owner(), path_for_owner)
+                return path_for_owner
+
+        return []
 
     def register_win(self, winner: PlayerProfile, winner_path: list):
         self._is_over = True
@@ -103,7 +132,7 @@ class Match:
                                     winner,
                                     winner_path)
 
-    def get_turn_owner(self) -> PlayerProfile:
+    def get_move_owner(self) -> PlayerProfile:
         return self._players[self._current_player_index]
 
     # def save(self):

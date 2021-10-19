@@ -1,4 +1,3 @@
-from gui_lib.painters.hexagon_painter import HexagonPainter
 from gui_lib.rgb_colors import RgbColors
 from gui_lib.scene import Scene
 from gui_lib.scene_elements.gui_elements.label import Label

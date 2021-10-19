@@ -99,7 +99,8 @@ class ListView(Widget):
     def set_chosen_value(self):
         for index, item in enumerate(self.__items):
             if item.is_active():
-                self.__chosen_value = self.__value_index_by_item_index[index]
+                self.__chosen_value = \
+                    self.__values[self.__value_index_by_item_index[index]]
                 return
 
     def get_chosen_value(self) -> [None, str]:

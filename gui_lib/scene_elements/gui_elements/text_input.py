@@ -64,6 +64,9 @@ class TextInput(Widget):
     def text(self, value: str):
         self._label.set_text(value)
 
+    def set_max_length(self, value):
+        self._max_length = value
+
     def add_on_activate(self, func):
         """func(TextInput text_input)"""
         self._on_activate.append(func)

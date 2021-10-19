@@ -1,6 +1,7 @@
 import pygame
 from game_classes import color_theme
 from gui_lib import app
+from gui_lib.scene_elements.gui_elements.label import Label
 from gui_lib.scene_elements.gui_elements.list_view import ListView
 from gui_lib.scene_elements.gui_elements.rect_button import RectButton
 from gui_lib.scene_elements.gui_elements.titled_radio_box import TitledRadioBox
@@ -10,6 +11,13 @@ from pygame.math import Vector2
 
 
 class WidgetsFactory:
+    @staticmethod
+    def create_label(position: Vector2, text: str):
+        label = Label(text, font_color=color_theme.TITLE_COLOR)
+        label.set_position(position)
+
+        return label
+
     @staticmethod
     def create_rect_button(position: Vector2, text: str):
         return RectButton(position,

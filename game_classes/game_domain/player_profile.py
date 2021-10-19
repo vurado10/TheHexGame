@@ -6,4 +6,7 @@ class PlayerProfile:
                  name: str,
                  color: RgbColor):
         self.name = name
+        self.score = 0
+
+        # TODO: Delete
         self.color = color

@@ -30,20 +30,20 @@ class HexField:
         try:
             return self.__cells_owners[cell_index]
         except KeyError:
-            raise KeyError(f"No owner on index: {cell_index}")
+            raise ValueError(f"No owner on index: {cell_index}")
 
     def set_owner(self, cell_index: int, owner: PlayerProfile):
         current_owner = (self.get_owner(cell_index)
                          if self.is_occupied(cell_index)
                          else None)
 
+        self.__cells_owners[cell_index] = owner
+        self.__cells_states[cell_index] = CellStates.OCCUPIED
+
         utilities.execute_all_funcs(self.__on_cell_state_changing_funcs,
                                     cell_index,
                                     current_owner,
                                     owner)
-
-        self.__cells_owners[cell_index] = owner
-        self.__cells_states[cell_index] = CellStates.OCCUPIED
 
     def get_vertical_opposite_cells(self) -> List[Tuple[int, int]]:
         result = []
@@ -116,7 +116,8 @@ class HexField:
                 if (self.is_occupied(checking_cell)
                         and self.get_owner(checking_cell) is owner):
                     if checking_cell not in used:
-                        tracking_result[checking_cell] = current_cell
+                        if checking_cell not in tracking_result:
+                            tracking_result[checking_cell] = current_cell
 
                         if checking_cell in stop_cells:
                             return HexField._get_path_from_tracking(

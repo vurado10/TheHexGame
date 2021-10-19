@@ -1,9 +1,6 @@
 import pygame
-from game_classes import color_theme
 from game_classes.scenes.scene_with_list import SceneWithList
 from game_classes.widgets.widgets_factory import WidgetsFactory
-from gui_lib import app
-from gui_lib.scene import Scene
 from pygame.math import Vector2
 from pygame.surface import Surface
 
@@ -27,4 +24,4 @@ class SavingsListScene(SceneWithList):
         self.add_gui_element(self.__loading_button)
 
     def load(self, *args):
-        print(f"Loading {self._list_view.get_chosen_value()}")
+        pass
