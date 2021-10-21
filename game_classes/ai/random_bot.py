@@ -5,7 +5,7 @@ from game_classes.game_domain.match import Match
 
 
 class RandomBot(Bot):
-    def __init__(self, match: Match, player_name, delay: float = 0.1):
+    def __init__(self, match: Match, player_name, delay: float = 0.05):
         super().__init__(match, player_name)
 
         self.__delay = delay

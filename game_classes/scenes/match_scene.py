@@ -196,6 +196,11 @@ class MatchScene(Scene):
             elif pause_button_text == "continue":
                 title = "Game is over"
 
+            app.add_scene("saving",
+                          SavingScene(app.screen,
+                                      self.__match,
+                                      self.__matches_rep))
+
             app.create_and_set_scene(
                 "pause",
                 PauseScene,

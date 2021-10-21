@@ -29,7 +29,7 @@ class SavingScene(Scene):
 
         self.__save_file_name_input = WidgetsFactory.create_titled_text_input(
             Vector2(100, 50),
-            "Name of save file")
+            "Name of match")
 
         self.__save_file_name_input.text = self.__match.game_id
 
@@ -64,6 +64,7 @@ class SavingScene(Scene):
     def show_error(self, text=""):
         self.__status_label.set_font_color(RgbColors.LIGHT_RED)
         self.__status_label.set_text("Error: " + text)
+        self.__status_label.show()
 
     def save(self, *args):
         match_name = self.__save_file_name_input.text

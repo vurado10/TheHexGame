@@ -1,4 +1,5 @@
 import threading
+
 import pygame
 from game_classes import color_theme, environment
 from game_classes.ai.bot import Bot
@@ -9,22 +10,22 @@ from game_classes.game_domain.hex_field import HexField
 from game_classes.game_domain.match import Match
 from game_classes.game_domain.player_profile import PlayerProfile
 from game_classes.rating_system.rating_recorder import RatingRecorder
+from game_classes.scenes.ai_settings_helper import AiSettingsHelper
 from game_classes.scenes.match_scene import MatchScene
 from game_classes.scenes.saving_scene import SavingScene
 from game_classes.storages.matches_repository import MatchesRepository
 from game_classes.storages.players_repository import PlayersRepository
 from game_classes.widgets.widgets_factory import WidgetsFactory
 from gui_lib import app
+from gui_lib.rgb_colors import RgbColors
 from gui_lib.scene import Scene
-from gui_lib.scene_elements.gui_elements.label import Label
-from gui_lib.scene_elements.gui_elements.radio_box import RadioBox
 from gui_lib.scene_elements.gui_elements.text_input_sync_container import \
     TextInputSyncContainer
 from pygame.math import Vector2
 from pygame.surface import Surface
 
 
-class SettingsScene(Scene):
+class MatchCreatingScene(Scene):
     def __init__(self, screen: Surface):
         super().__init__(screen)
 
@@ -36,6 +37,10 @@ class SettingsScene(Scene):
         self.__second_player_name_input = \
             WidgetsFactory.create_titled_text_input(Vector2(100, 150),
                                                     "Second player nickname")
+
+        self.__status_label = WidgetsFactory.create_label(Vector2(350, 470),
+                                                          "")
+        self.__status_label.hide()
 
         self.__first_player_name_input.text = "Player_1"
         self.__second_player_name_input.text = "Player_2"
@@ -66,19 +71,8 @@ class SettingsScene(Scene):
                                                     "10 / 0.5",
                                                     "0.5 / 5"])
 
-        self.__ai_types = ["No AI", "Random", "Level 1"]
-
-        self.__first_ai_radio_box = \
-            WidgetsFactory.create_titled_radio_box(Vector2(400, 250),
-                                                   "First player "
-                                                   "AI setting",
-                                                   self.__ai_types)
-
-        self.__second_ai_radio_box = \
-            WidgetsFactory.create_titled_radio_box(Vector2(400, 350),
-                                                   "Second player "
-                                                   "AI setting",
-                                                   self.__ai_types)
+        self.__ai_types, self.__first_ai_input, self.__second_ai_input = \
+            WidgetsFactory.create_ai_options(Vector2(400, 250))
 
         self.__back_button = \
             WidgetsFactory.create_rect_button(Vector2(100, 460), "Back")
@@ -87,31 +81,21 @@ class SettingsScene(Scene):
             WidgetsFactory.create_rect_button(Vector2(230, 460), "Start game")
 
         self.__back_button.add_handler(pygame.MOUSEBUTTONDOWN,
-                                       SettingsScene.go_back)
+                                       MatchCreatingScene.go_back)
 
         self.__start_button.add_handler(pygame.MOUSEBUTTONDOWN,
                                         self.start_game)
 
         self.add_gui_elements([
             self.__name_inputs_form,
+            self.__status_label,
             self.__field_size_radio_box,
             self.__timer_radio_box,
-            self.__first_ai_radio_box,
-            self.__second_ai_radio_box,
+            self.__first_ai_input,
+            self.__second_ai_input,
             self.__back_button,
             self.__start_button
         ])
-
-    @staticmethod
-    def create_radio_box_with_title(radio_box_position: Vector2,
-                                    title: str,
-                                    variants_names: list[str]):
-        radio_box = RadioBox(radio_box_position, variants_names)
-        radio_box_title = Label(title)
-        radio_box_title.position = \
-            radio_box.position + Vector2(0, -30)
-
-        return [radio_box, radio_box_title]
 
     @staticmethod
     def go_back(*args):
@@ -120,6 +104,8 @@ class SettingsScene(Scene):
         app.create_and_set_scene("main menu", MainMenuScene)
 
     def start_game(self, *args):
+        self.__status_label.hide()
+
         width, height = \
             map(int, self.__field_size_radio_box.get_value().split("x"))
 
@@ -131,23 +117,27 @@ class SettingsScene(Scene):
 
         game_time, move_time = self.parse_time()
 
-        match = Match(matches_rep.generate_id(),
-                      HexField(width, height),
-                      [player1, player2],
-                      {player1.name: Directions.HORIZONTAL,
-                       player2.name: Directions.VERTICAL},
-                      time_for_game=game_time,
-                      time_for_move=move_time)
+        try:
+            match = Match(matches_rep.generate_id(),
+                          HexField(width, height),
+                          [player1, player2],
+                          {player1.name: Directions.HORIZONTAL,
+                           player2.name: Directions.VERTICAL},
+                          time_for_game=game_time,
+                          time_for_move=move_time)
+        except ValueError as e:
+            self.__show_error(e.args[0])
+            return
 
-        ai_names, bots = self.create_bots(match)
-
-        rating_recorder = RatingRecorder(players_rep)
-
-        app.add_scene("saving", SavingScene(app.screen, match, matches_rep))
+        ai_names, bots = \
+            (AiSettingsHelper(self.__ai_types)
+                .create_bots(match,
+                             self.__first_ai_input.get_value(),
+                             self.__second_ai_input.get_value()))
 
         match_scene = MatchScene(app.screen,
                                  match,
-                                 rating_recorder,
+                                 RatingRecorder(players_rep),
                                  matches_rep,
                                  ai_names,
                                  bots)
@@ -159,53 +149,14 @@ class SettingsScene(Scene):
 
         return float(game_time) * 60, float(move_time) * 60
 
-    def create_bots(self, match) -> tuple[list[str], list[Bot]]:
-        ai_names = []
-        bots = []
-
-        bot1 = \
-            self.create_bot(self.__first_ai_radio_box.get_value(), match, 0)
-        if bot1:
-            bot1.send_calc_request()  # TODO: to match scene
-            ai_names.append(match.get_player(0).name)
-            bots.append(bot1)
-
-        bot2 = \
-            self.create_bot(self.__second_ai_radio_box.get_value(), match, 1)
-        if bot2:
-            ai_names.append(match.get_player(1).name)
-            bots.append(bot2)
-
-        return ai_names, bots
-
-    def create_bot(self, ai_type, match, move_order: int) -> [None, Bot]:
-        player_name = match.get_player(move_order).name
-
-        if ai_type == self.__ai_types[1]:
-            bot = RandomBot(match, player_name)
-        elif ai_type == self.__ai_types[2]:
-            bot = RandomBot(match, player_name)
-        else:
-            return None
-
-        def ai_move(current_player, next_player):
-            if next_player.name == player_name:
-                bot.send_calc_request()
-
-        match.add_on_switch_move_owner(ai_move)
-        t = threading.Thread(target=bot.start)
-        if environment.LOG:
-            print(f"create bot generated {t.name}")
-        t.start()
-
-        return bot
-
     def __load_players(self, players_rep) -> list[PlayerProfile]:
         return [
-            SettingsScene.__load_player(self.__first_player_name_input.text,
-                               players_rep, 0),
-            SettingsScene.__load_player(self.__second_player_name_input.text,
-                               players_rep, 1)
+            MatchCreatingScene.__load_player(
+                self.__first_player_name_input.text,
+                players_rep, 0),
+            MatchCreatingScene.__load_player(
+                self.__second_player_name_input.text,
+                players_rep, 1)
         ]
 
     @staticmethod
@@ -219,3 +170,7 @@ class SettingsScene(Scene):
 
         return player
 
+    def __show_error(self, text=""):
+        self.__status_label.set_text("Error: " + text)
+        self.__status_label.show()
+        self.__status_label.set_font_color(RgbColors.LIGHT_RED)

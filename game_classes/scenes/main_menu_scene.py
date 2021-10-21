@@ -3,7 +3,7 @@ from game_classes.scenes.match_scene import MatchScene
 from game_classes.scenes.menu_scene import MenuScene
 from game_classes.scenes.rating_scene import RatingScene
 from game_classes.scenes.savings_list_scene import SavingsListScene
-from game_classes.scenes.settings_scene import SettingsScene
+from game_classes.scenes.match_creating_scene import MatchCreatingScene
 from gui_lib import app
 from pygame.event import Event
 from pygame.surface import Surface
@@ -30,7 +30,7 @@ class MainMenuScene(MenuScene):
 
     @staticmethod
     def start_new_game(*args):
-        app.create_and_set_scene("settings", SettingsScene)
+        app.create_and_set_scene("settings", MatchCreatingScene)
 
     @staticmethod
     def load_game(*args):

@@ -72,3 +72,21 @@ class WidgetsFactory:
 
         return button
 
+    @staticmethod
+    def create_ai_options(position: Vector2):
+        ai_types = ["No AI", "Random", "Level 1"]
+
+        first_ai_radio_box = \
+            WidgetsFactory.create_titled_radio_box(position,
+                                                   "First player "
+                                                   "AI setting",
+                                                   ai_types)
+
+        second_ai_radio_box = \
+            WidgetsFactory.create_titled_radio_box(position + Vector2(0, 100),
+                                                   "Second player "
+                                                   "AI setting",
+                                                   ai_types)
+
+        return ai_types, first_ai_radio_box, second_ai_radio_box
+

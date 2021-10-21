@@ -130,10 +130,6 @@ class HexField:
                         deque.append(checking_cell)
 
         return []
-
-    # def save(self):
-    #     with open("hex_field_state.json", "w") as file:
-    #         file.write(self.serialize())
     #
     # def serialize(self):
     #     data = {
