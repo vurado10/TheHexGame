@@ -1,5 +1,7 @@
+import threading
 import pygame
 from game_classes import color_theme
+from game_classes.ai.bot import Bot
 from game_classes.ai.random_bot import RandomBot
 from game_classes.color_theme import PLAYER1_COLOR, PLAYER2_COLOR
 from game_classes.game_domain.directions import Directions
@@ -12,11 +14,8 @@ from gui_lib import app
 from gui_lib.scene import Scene
 from gui_lib.scene_elements.gui_elements.label import Label
 from gui_lib.scene_elements.gui_elements.radio_box import RadioBox
-from gui_lib.scene_elements.gui_elements.rect_button import RectButton
 from gui_lib.scene_elements.gui_elements.text_input_sync_container import \
     TextInputSyncContainer
-from gui_lib.scene_elements.gui_elements.titled_text_input import \
-    TitledTextInput
 from pygame.math import Vector2
 from pygame.surface import Surface
 
@@ -60,24 +59,22 @@ class SettingsScene(Scene):
                                                    ["inf / inf",
                                                     "inf / 2",
                                                     "10 / inf",
-                                                    "60 / inf",
-                                                    "10 / 1"])
+                                                    "10 / 0.5",
+                                                    "0.5 / 5"])
+
+        self.__ai_types = ["No AI", "Random", "Level 1"]
 
         self.__first_ai_radio_box = \
             WidgetsFactory.create_titled_radio_box(Vector2(400, 250),
                                                    "First player "
                                                    "AI setting",
-                                                   ["No AI",
-                                                    "Random",
-                                                    "Level 1"])
+                                                   self.__ai_types)
 
         self.__second_ai_radio_box = \
             WidgetsFactory.create_titled_radio_box(Vector2(400, 350),
                                                    "Second player "
                                                    "AI setting",
-                                                   ["No AI",
-                                                    "Random",
-                                                    "Level 1"])
+                                                   self.__ai_types)
 
         self.__back_button = \
             WidgetsFactory.create_rect_button(Vector2(100, 460), "Back")
@@ -127,30 +124,62 @@ class SettingsScene(Scene):
         player2 = PlayerProfile(self.__second_player_name_input.text,
                                 PLAYER2_COLOR)
 
+        game_time, move_time = self.parse_time()
+
         match = Match("0",
                       HexField(width, height),
                       [player1, player2],
                       {player1.name: Directions.HORIZONTAL,
-                       player2.name: Directions.VERTICAL})
+                       player2.name: Directions.VERTICAL},
+                      time_for_game=game_time,
+                      time_for_move=move_time)
 
-        app.create_and_set_scene("game", MatchScene, match=match)
+        app.create_and_set_scene("game",
+                                 MatchScene,
+                                 match=match,
+                                 ai_names=self.create_bots(match))
 
-        ai_input1 = self.__first_ai_radio_box.get_value()
-        ai_input2 = self.__second_ai_radio_box.get_value()
-        bot = RandomBot(match)
+    def parse_time(self) -> tuple[float, float]:
+        game_time, move_time = self.__timer_radio_box.get_value().split(" / ")
 
-        def ai1_move(current_player, next_player):
-            if next_player.name == player1.name:
-                bot.make_move()
+        return float(game_time) * 60, float(move_time) * 60
 
-        def ai2_move(current_player, next_player):
-            if next_player.name == player2.name:
-                bot.make_move()
+    def create_bots(self, match) -> list[str]:
+        ai_names = []
 
-        if ai_input2 == "Random":
-            match.add_on_switch_move_owner(ai2_move)
+        bot1 = \
+            self.create_bot(self.__first_ai_radio_box.get_value(), match, 0)
+        if bot1:
+            bot1.send_calc_request()
+            ai_names.append(match.get_player(0))
 
-        if ai_input1 == "Random":
-            match.add_on_switch_move_owner(ai1_move)
+        bot2 = \
+            self.create_bot(self.__second_ai_radio_box.get_value(), match, 1)
+        if bot2:
+            ai_names.append(match.get_player(1))
 
-            bot.make_move()
+        return ai_names
+
+    def create_bot(self, ai_type, match, move_order: int) -> [None, Bot]:
+        player_name = match.get_player(move_order).name
+
+        if ai_type == self.__ai_types[1]:
+            bot = RandomBot(match, player_name)
+        elif ai_type == self.__ai_types[2]:
+            bot = RandomBot(match, player_name)
+        else:
+            return None
+
+        def ai_move(current_player, next_player):
+            if next_player.name == player_name:
+                bot.send_calc_request()
+
+        match.add_on_switch_move_owner(ai_move)
+        threading.Thread(target=bot.start).start()
+
+        return bot
+
+
+
+
+

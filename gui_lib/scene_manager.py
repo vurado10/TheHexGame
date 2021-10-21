@@ -17,6 +17,7 @@ class SceneManager:
         if self.current_scene is not None:
             self.current_scene.on_hide()
 
+        self.next_scene.on_show()
         self.current_scene = self.next_scene
         self.next_scene = None
 

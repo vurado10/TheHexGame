@@ -1,4 +1,6 @@
 import sys
+import threading
+
 import pygame
 from typing import Tuple
 from gui_lib.rgb_color import RgbColor
@@ -17,6 +19,7 @@ class Scene(EventListener):
 
         def exit_game(e, v):
             pygame.quit()
+            # Is it need to stop the bots?
             sys.exit(0)
 
         self.add_handler(pygame.QUIT, exit_game)
@@ -59,6 +62,9 @@ class Scene(EventListener):
     def add_gui_elements(self, elements: list[GuiElement]):
         for element in elements:
             self.add_gui_element(element)
+
+    def on_show(self):
+        pass
 
     def on_hide(self):
         pass

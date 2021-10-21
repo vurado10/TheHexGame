@@ -2,10 +2,8 @@ import math
 import pygame
 from game_classes import color_theme
 from game_classes.game_domain.directions import Directions
-from game_classes.game_domain.hex_field import HexField
 from game_classes.game_domain.match import Match
 from game_classes.game_domain.player_profile import PlayerProfile
-from game_classes.scenes.settings.hex_field_profile import HexFieldProfile
 from game_classes.widgets.arrow_widget import ArrowWidget
 from game_classes.widgets.cell_button import CellButton
 from gui_lib.painters.hexagon_painter import HexagonPainter

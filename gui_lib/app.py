@@ -24,7 +24,8 @@ def init_app(screen_size: Tuple[int, int]):
     __scenes = dict()
 
 
-def on_exit(): sys.exit(0)
+def on_exit():
+    sys.exit(0)
 
 
 def add_scene(name: str, scene: Scene):
@@ -47,6 +48,8 @@ def create_scene(name: str, scene_type, *args, **kwargs):
     add_scene(name, scene_type(screen, *args, **kwargs))
 
 
+# TODO: remove creating scene inside procedure,
+#  it need to get scene object like procedure parameter
 def create_and_set_scene(name: str, scene_type, *args, **kwargs):
     create_scene(name, scene_type, *args, **kwargs)
     set_current_scene(name)
