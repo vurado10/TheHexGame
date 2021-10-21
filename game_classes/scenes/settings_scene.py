@@ -1,4 +1,6 @@
 import threading
+
+import environment
 import pygame
 from game_classes import color_theme
 from game_classes.ai.bot import Bot
@@ -134,31 +136,37 @@ class SettingsScene(Scene):
                       time_for_game=game_time,
                       time_for_move=move_time)
 
+        ai_names, bots = self.create_bots(match)
+
         app.create_and_set_scene("game",
                                  MatchScene,
                                  match=match,
-                                 ai_names=self.create_bots(match))
+                                 ai_names=ai_names,
+                                 bots=bots)
 
     def parse_time(self) -> tuple[float, float]:
         game_time, move_time = self.__timer_radio_box.get_value().split(" / ")
 
         return float(game_time) * 60, float(move_time) * 60
 
-    def create_bots(self, match) -> list[str]:
+    def create_bots(self, match) -> tuple[list[str], list[Bot]]:
         ai_names = []
+        bots = []
 
         bot1 = \
             self.create_bot(self.__first_ai_radio_box.get_value(), match, 0)
         if bot1:
-            bot1.send_calc_request()
+            bot1.send_calc_request()  # TODO: to match scene
             ai_names.append(match.get_player(0))
+            bots.append(bot1)
 
         bot2 = \
             self.create_bot(self.__second_ai_radio_box.get_value(), match, 1)
         if bot2:
             ai_names.append(match.get_player(1))
+            bots.append(bot2)
 
-        return ai_names
+        return ai_names, bots
 
     def create_bot(self, ai_type, match, move_order: int) -> [None, Bot]:
         player_name = match.get_player(move_order).name
@@ -175,11 +183,9 @@ class SettingsScene(Scene):
                 bot.send_calc_request()
 
         match.add_on_switch_move_owner(ai_move)
-        threading.Thread(target=bot.start).start()
+        t = threading.Thread(target=bot.start)
+        if environment.LOG:
+            print(f"create bot generated {t.name}")
+        t.start()
 
         return bot
-
-
-
-
-

@@ -22,6 +22,7 @@ def format_time(title, seconds: float) -> str:
         seconds_mod = seconds_int % 60
 
         minutes_str = str(minutes) if minutes > 9 else "0" + str(minutes)
+
         seconds_mod_str = str(seconds_mod) \
             if seconds_mod > 9 \
             else "0" + str(seconds_mod)

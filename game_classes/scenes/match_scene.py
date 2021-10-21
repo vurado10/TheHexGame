@@ -1,4 +1,6 @@
+import environment
 import pygame
+from game_classes.ai.bot import Bot
 from game_classes.color_theme import *
 from game_classes.game_domain.match import Match
 from game_classes.game_domain.player_profile import PlayerProfile
@@ -20,7 +22,8 @@ class MatchScene(Scene):
     def __init__(self,
                  screen: Surface,
                  match: Match,
-                 ai_names: list[str]):
+                 ai_names: list[str],
+                 bots: list[Bot] = None):
         super().__init__(screen)
 
         self.__match = match
@@ -28,18 +31,26 @@ class MatchScene(Scene):
         self.__pause_button = None
         self.__move_owner_label = None
         self.__hex_field_gui_element = None
+        self.__freeze_button = None
         self.__game_timer_label = None
         self.__move_timer_label = None
+        self.__bots = list(bots) if bots is not None else []
         self.__label_update_timer = \
-            IntervalTimer(1.0, self.update_timer_labels)
+            IntervalTimer(0.2, self.update_timer_labels)
+        self.__is_freeze = False
 
         self.add_gui_element(BotListener(self.__match))
 
         self.load_gui()
 
-        self.__match.start_game()
+    @property
+    def match(self):
+        return self.__match
 
     def on_show(self):
+        for bot in self.__bots:
+            bot.unlock_sending_response()
+
         if not self.__match.is_over():
             if self.__match.is_pause():
                 self.__match.resume_game()
@@ -49,8 +60,36 @@ class MatchScene(Scene):
                 self.__label_update_timer.start()
 
     def on_hide(self):
+        self.freeze()
+
+    def freeze(self):
+        self.__is_freeze = True
+        try:
+            self.__match.pause_game()
+        # TODO: create new exception class for timer errors
+        except Exception:
+            pass
+
         if self.__label_update_timer:
             self.__label_update_timer.pause()
+
+        for bot in self.__bots:
+            bot.lock_sending_response()
+
+    def unfreeze(self):
+        self.__is_freeze = False
+
+        try:
+            self.__match.resume_game()
+        # TODO: create new exception class for timer errors
+        except Exception:
+            pass
+
+        if self.__label_update_timer:
+            self.__label_update_timer.resume()
+
+        for bot in self.__bots:
+            bot.unlock_sending_response()
 
     def update_move_owner_label(self, owner):
         turn_owner = owner
@@ -62,18 +101,12 @@ class MatchScene(Scene):
         self.set_bg_color(SCENE_BG_COLOR)
 
         self.__pause_button = \
-            WidgetsFactory.create_rect_button(Vector2(20, 10), "Pause")
+            WidgetsFactory.create_rect_button(Vector2(20, 10), "Pause menu")
 
-        def on_pause(*args):
-            try:
-                self.__match.pause_game()
-            # TODO: create new exception class for timer errors
-            except Exception:
-                pass
-
+        def on_switching_on_pause_menu(*args):
             title = ""
             pause_button_text = self.__pause_button.label.text.casefold()
-            if pause_button_text == "pause":
+            if pause_button_text == "pause menu":
                 title = "Pause"
             elif pause_button_text == "continue":
                 title = "Game is over"
@@ -83,7 +116,9 @@ class MatchScene(Scene):
                 PauseScene,
                 title=title)
 
-        self.__pause_button.add_handler(pygame.MOUSEBUTTONDOWN, on_pause)
+        self.__pause_button.add_handler(pygame.MOUSEBUTTONDOWN,
+                                        on_switching_on_pause_menu)
+
         self.__move_owner_label = Label("")
         self.__move_owner_label.position = (self.__pause_button.position
                                             + Vector2(0, 200))
@@ -145,6 +180,21 @@ class MatchScene(Scene):
         self.__match.add_on_game_over(on_stop)
         self.__match.add_on_win(on_win)
         self.__match.try_register_win()
+
+        if environment.FREEZE_BUTTON:
+            self.__freeze_button = \
+                WidgetsFactory.create_rect_button(Vector2(20, 70), "Freeze")
+
+            def on_freeze_click(*args):
+                if not self.__is_freeze:
+                    self.freeze()
+                    return
+                self.unfreeze()
+
+            self.__freeze_button.add_handler(pygame.MOUSEBUTTONDOWN,
+                                             on_freeze_click)
+
+            self.add_gui_element(self.__freeze_button)
 
         self.add_gui_elements([
             self.__pause_button,

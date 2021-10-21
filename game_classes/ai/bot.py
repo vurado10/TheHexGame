@@ -11,6 +11,7 @@ class Bot(ABC):
         self._field = self._match.field
         self._player_name = player_name
         self._make_move_request_event = threading.Event()
+        self._sending_allowing = threading.Event()
 
     @abstractmethod
     def make_move(self) -> int:
@@ -18,6 +19,12 @@ class Bot(ABC):
 
     def send_calc_request(self):
         self._make_move_request_event.set()
+
+    def lock_sending_response(self):
+        self._sending_allowing.clear()
+
+    def unlock_sending_response(self):
+        self._sending_allowing.set()
 
     def start(self):
         while True:
@@ -28,9 +35,11 @@ class Bot(ABC):
             # TODO: add exception handling (if event queue is full,
             #  pygame.event.post will throw an exception)
 
-            pygame.event.post(pygame.event.Event(BotEventsTypes.CALC_FINISH,
-                                                 cell_index=self.make_move(),
-                                                 player_name=
-                                                 self._player_name))
+            calc_result = pygame.event.Event(BotEventsTypes.CALC_FINISH,
+                                             cell_index=self.make_move(),
+                                             player_name=self._player_name)
+
+            self._sending_allowing.wait()
+            pygame.event.post(calc_result)
 
             self._make_move_request_event.clear()

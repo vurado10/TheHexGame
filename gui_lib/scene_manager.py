@@ -1,6 +1,3 @@
-from gui_lib.scene import Scene
-
-
 class SceneManager:
     def __init__(self, next_scene=None):
         self.current_scene = None

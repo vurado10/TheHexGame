@@ -1,6 +1,7 @@
 from game_classes.scenes.main_menu_scene import MainMenuScene
 from gui_lib import app
 
+
 if __name__ == "__main__":
     app.init_app((960, 540))
 

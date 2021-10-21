@@ -6,6 +6,7 @@ from gui_lib.interval_timer import IntervalTimer
 
 class IntervalTimerTests(unittest.TestCase):
     def test_interval_timer(self):
+        # TODO: write correct tests
         k = 1000
 
         def foo():
@@ -16,5 +17,7 @@ class IntervalTimerTests(unittest.TestCase):
         timer = IntervalTimer(1.0, foo)
         timer.start()
 
-        time.sleep(50.0)
+        time.sleep(10.0)
         timer.pause()
+
+        self.assertTrue(True)

@@ -1,4 +1,6 @@
 import math
+import threading
+import environment
 from typing import List, Dict
 from gui_lib import utilities
 from game_classes.game_domain.directions import Directions
@@ -35,6 +37,7 @@ class Match:
         self._on_win_funcs = []
         self._is_over = False
         self._is_pause = False
+        self._is_starting = False
         self._winner_path = []
 
         self.__timer = None
@@ -45,6 +48,8 @@ class Match:
         if time_for_game < math.inf or time_for_move < math.inf:
             self.__timer = IntervalTimer(1.0,
                                          lambda: self.handle_timer_tick(1.0))
+            if environment.LOG:
+                print(f"Match generated: {self.__timer.thread.name}")
 
     @property
     def game_id(self) -> str:
@@ -56,6 +61,9 @@ class Match:
 
     def handle_timer_tick(self, interval):
         self.__remaining_game_sec -= interval
+        if environment.LOG:
+            print(f"on tick {threading.current_thread().name} "
+                  f"{self.__remaining_game_sec}\n")
         self.__remaining_move_sec -= interval
 
         if self.__remaining_game_sec < 1e-5:
@@ -181,7 +189,11 @@ class Match:
         if self.is_pause():
             raise Exception("Game on pause")
 
+        if self._is_starting:
+            raise Exception("Can't start a game twice")
+
         if self.__timer:
+            self._is_starting = True
             self.__timer.start()
 
     def stop_game(self):
@@ -230,10 +242,6 @@ class Match:
     def get_move_owner(self) -> PlayerProfile:
         return self._players[self._current_player_index]
 
-    # def save(self):
-    #     with open("hex_field_state.json", "w") as file:
-    #         file.write(self.serialize())
-    #
     # def serialize(self):
     #     data = {
     #         "field": self._field.serialize(),
