@@ -1,6 +1,6 @@
 import math
 import threading
-import environment
+from game_classes import environment
 from typing import List, Dict
 from gui_lib import utilities
 from game_classes.game_domain.directions import Directions
@@ -42,10 +42,11 @@ class Match:
 
         self.__timer = None
         self.__remaining_game_sec = time_for_game
+        self.__time_for_game = time_for_game
         self.__time_for_move = time_for_move
         self.__remaining_move_sec = self.__time_for_move
 
-        if time_for_game < math.inf or time_for_move < math.inf:
+        if self.has_timer():
             self.__timer = IntervalTimer(1.0,
                                          lambda: self.handle_timer_tick(1.0))
             if environment.LOG:
@@ -58,6 +59,10 @@ class Match:
     @property
     def field(self):
         return self._field
+
+    @property
+    def winner_path(self):
+        return list(self._winner_path)
 
     def handle_timer_tick(self, interval):
         self.__remaining_game_sec -= interval
@@ -109,6 +114,10 @@ class Match:
     def add_on_game_over(self, func):
         """func()"""
         self._on_game_over_funcs.append(func)
+
+    def has_timer(self):
+        return (self.__time_for_game < math.inf
+                or self.__time_for_move < math.inf)
 
     def is_over(self):
         return self._is_over
@@ -195,6 +204,8 @@ class Match:
         if self.__timer:
             self._is_starting = True
             self.__timer.start()
+        else:
+            raise Exception("No any timers in the game")
 
     def stop_game(self):
         if self.is_over():

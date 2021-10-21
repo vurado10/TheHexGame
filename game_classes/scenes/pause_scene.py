@@ -1,6 +1,5 @@
 import pygame
 from game_classes.scenes.menu_scene import MenuScene
-from game_classes.scenes.saving_scene import SavingScene
 from gui_lib import app
 from pygame.surface import Surface
 
@@ -14,11 +13,12 @@ class PauseScene(MenuScene):
                                              "game"))
 
         self._buttons["Save"].add_handler(pygame.MOUSEBUTTONDOWN,
-                                         self.handle_on_save)
+                                          PauseScene.handle_on_save)
 
         self._buttons["Main Menu"].add_handler(pygame.MOUSEBUTTONDOWN,
                                          lambda *args: app.set_current_scene(
                                              "main menu"))
 
-    def handle_on_save(self, *args):
-        app.create_and_set_scene("saving", SavingScene)
+    @staticmethod
+    def handle_on_save(*args):
+        app.set_current_scene("saving")

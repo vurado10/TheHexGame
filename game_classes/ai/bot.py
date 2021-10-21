@@ -28,7 +28,10 @@ class Bot(ABC):
 
     def start(self):
         while True:
-            self._make_move_request_event.wait()
+            #  some results can disappear,
+            #  when scenes are switching, so bot can wait forever,
+            #  if there is no timeout
+            self._make_move_request_event.wait(timeout=2.0)
 
             # TODO: make "bot stop" event
 
@@ -40,6 +43,7 @@ class Bot(ABC):
                                              player_name=self._player_name)
 
             self._sending_allowing.wait()
+
             pygame.event.post(calc_result)
 
             self._make_move_request_event.clear()

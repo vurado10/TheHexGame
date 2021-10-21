@@ -2,11 +2,11 @@ from abc import ABC, abstractmethod
 
 
 class Repository(ABC):
-    def __init__(self, file_path: str):
-        self._file_path = file_path
+    def __init__(self, files_path: str):
+        self._file_path = files_path
 
     @abstractmethod
-    def get_id(self, obj) -> str:
+    def generate_id(self) -> str:
         pass
 
     @abstractmethod

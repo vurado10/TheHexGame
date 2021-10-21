@@ -55,6 +55,11 @@ def create_and_set_scene(name: str, scene_type, *args, **kwargs):
     set_current_scene(name)
 
 
+def register_and_show_scene(name, scene: Scene):
+    add_scene(name, scene)
+    set_current_scene(name)
+
+
 def start_main_loop():
     while True:
         clock.tick(fps)

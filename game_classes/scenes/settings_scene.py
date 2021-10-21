@@ -1,8 +1,6 @@
 import threading
-
-import environment
 import pygame
-from game_classes import color_theme
+from game_classes import color_theme, environment
 from game_classes.ai.bot import Bot
 from game_classes.ai.random_bot import RandomBot
 from game_classes.color_theme import PLAYER1_COLOR, PLAYER2_COLOR
@@ -10,7 +8,11 @@ from game_classes.game_domain.directions import Directions
 from game_classes.game_domain.hex_field import HexField
 from game_classes.game_domain.match import Match
 from game_classes.game_domain.player_profile import PlayerProfile
+from game_classes.rating_system.rating_recorder import RatingRecorder
 from game_classes.scenes.match_scene import MatchScene
+from game_classes.scenes.saving_scene import SavingScene
+from game_classes.storages.matches_repository import MatchesRepository
+from game_classes.storages.players_repository import PlayersRepository
 from game_classes.widgets.widgets_factory import WidgetsFactory
 from gui_lib import app
 from gui_lib.scene import Scene
@@ -121,14 +123,15 @@ class SettingsScene(Scene):
         width, height = \
             map(int, self.__field_size_radio_box.get_value().split("x"))
 
-        player1 = PlayerProfile(self.__first_player_name_input.text,
-                                PLAYER1_COLOR)
-        player2 = PlayerProfile(self.__second_player_name_input.text,
-                                PLAYER2_COLOR)
+        players_rep = PlayersRepository(environment.PLAYERS_REP_PATH)
+        matches_rep = MatchesRepository(environment.MATCHES_REP_PATH,
+                                        players_rep)
+
+        player1, player2 = self.__load_players(players_rep)
 
         game_time, move_time = self.parse_time()
 
-        match = Match("0",
+        match = Match(matches_rep.generate_id(),
                       HexField(width, height),
                       [player1, player2],
                       {player1.name: Directions.HORIZONTAL,
@@ -138,11 +141,18 @@ class SettingsScene(Scene):
 
         ai_names, bots = self.create_bots(match)
 
-        app.create_and_set_scene("game",
-                                 MatchScene,
-                                 match=match,
-                                 ai_names=ai_names,
-                                 bots=bots)
+        rating_recorder = RatingRecorder(players_rep)
+
+        app.add_scene("saving", SavingScene(app.screen, match, matches_rep))
+
+        match_scene = MatchScene(app.screen,
+                                 match,
+                                 rating_recorder,
+                                 matches_rep,
+                                 ai_names,
+                                 bots)
+
+        app.register_and_show_scene("game", match_scene)
 
     def parse_time(self) -> tuple[float, float]:
         game_time, move_time = self.__timer_radio_box.get_value().split(" / ")
@@ -157,13 +167,13 @@ class SettingsScene(Scene):
             self.create_bot(self.__first_ai_radio_box.get_value(), match, 0)
         if bot1:
             bot1.send_calc_request()  # TODO: to match scene
-            ai_names.append(match.get_player(0))
+            ai_names.append(match.get_player(0).name)
             bots.append(bot1)
 
         bot2 = \
             self.create_bot(self.__second_ai_radio_box.get_value(), match, 1)
         if bot2:
-            ai_names.append(match.get_player(1))
+            ai_names.append(match.get_player(1).name)
             bots.append(bot2)
 
         return ai_names, bots
@@ -189,3 +199,23 @@ class SettingsScene(Scene):
         t.start()
 
         return bot
+
+    def __load_players(self, players_rep) -> list[PlayerProfile]:
+        return [
+            SettingsScene.__load_player(self.__first_player_name_input.text,
+                               players_rep, 0),
+            SettingsScene.__load_player(self.__second_player_name_input.text,
+                               players_rep, 1)
+        ]
+
+    @staticmethod
+    def __load_player(name, players_rep, move_order: int) -> PlayerProfile:
+        color = PLAYER1_COLOR if move_order == 0 else PLAYER2_COLOR
+        try:
+            player = players_rep.get_by_id(name)
+            player.color = color
+        except ValueError:
+            player = PlayerProfile(name, color, 0)
+
+        return player
+

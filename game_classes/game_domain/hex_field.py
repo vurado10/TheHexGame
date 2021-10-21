@@ -14,6 +14,10 @@ class HexField:
         self.__cells_owners = {}
         self.__on_cell_state_changing_funcs = []
 
+    @property
+    def size(self) -> int:
+        return self.width * self.width
+
     def add_on_cell_owner_changing(self, func):
         """func(int cell_index, Player current_owner, Player next_owner)
         current_owner is None if cell doesn't have any owners"""
