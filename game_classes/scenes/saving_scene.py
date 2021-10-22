@@ -31,7 +31,7 @@ class SavingScene(Scene):
             Vector2(100, 50),
             "Name of match")
 
-        self.__save_file_name_input.text = self.__match.game_id
+        self.__save_file_name_input.text = self.__matches_rep.generate_id()
 
         self.__back_button.add_handler(pygame.MOUSEBUTTONDOWN,
                                        SavingScene.go_back)

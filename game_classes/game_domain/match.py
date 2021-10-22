@@ -27,6 +27,8 @@ class Match:
             raise ValueError("players must have different names, "
                              f"but their names are: {players[0].name}")
 
+        # TODO: can't get private fields when deserialization,
+        #  so they are protected
         self._game_id = game_id
         self._field = field
         self._players = list(players)
@@ -64,6 +66,9 @@ class Match:
     @property
     def winner_path(self):
         return list(self._winner_path)
+
+    def has_winner(self):
+        return len(self._winner_path) != 0
 
     def handle_timer_tick(self, interval):
         self.__remaining_game_sec -= interval

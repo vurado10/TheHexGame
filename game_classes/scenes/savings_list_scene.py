@@ -42,8 +42,12 @@ class SavingsListScene(SceneWithList):
         ])
 
     def load(self, *args):
-        match = \
-            self.__matches_rep.get_by_id(self._list_view.get_chosen_value())
+        try:
+            match = \
+                self.__matches_rep.get_by_id(
+                    self._list_view.get_chosen_value())
+        except ValueError:
+            return
 
         ai_names, bots = \
             (AiSettingsHelper(self.__ai_types)

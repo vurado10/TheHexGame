@@ -9,13 +9,15 @@ class Repository(ABC):
 
         self._directory_path = directory_path
 
-    @abstractmethod
     def get_all(self):
-        pass
+        result = []
+        for identifier in self.get_all_ids():
+            result.append(self.get_by_id(identifier))
 
-    @abstractmethod
+        return result
+
     def get_all_ids(self) -> list[str]:
-        pass
+        return list(map(lambda n: n[:-5], os.listdir(self._directory_path)))
 
     @abstractmethod
     def generate_id(self) -> str:

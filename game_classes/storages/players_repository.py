@@ -9,16 +9,6 @@ class PlayersRepository(Repository):
     def __init__(self, directory_path: str):
         super().__init__(directory_path)
 
-    def get_all(self) -> list[PlayerProfile]:
-        result = []
-        for name in self.get_all_ids():
-            result.append(self.get_by_id(name))
-
-        return result
-
-    def get_all_ids(self) -> list[str]:
-        return list(map(lambda n: n[:-5], os.listdir(self._directory_path)))
-
     def generate_id(self) -> str:
         raise NotImplemented
 

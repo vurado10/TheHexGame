@@ -15,41 +15,47 @@ class MatchesRepository(Repository):
 
         self.__players_rep = players_repository
 
-    def get_all(self):
-        pass
-
-    def get_all_ids(self) -> list[str]:
-        return [
-            "save 1908",
-            "save 5672",
-            "save 138",
-            "save 7088",
-            "save 7927",
-            "save 2814",
-            "save 854",
-            "save 1330",
-            "save 2328",
-            "save 4397",
-            "save 1639",
-            "save 4933",
-            "save 441",
-            "save 1407",
-            "save 6977",
-        ]
-
     def generate_id(self) -> str:
-        return "Game"
+        return "Game1"
 
     def get_by_id(self, match_id: str) -> Match:
-        print(match_id)
-        player1 = PlayerProfile("player_from_repo1", 0)
-        player2 = PlayerProfile("player_from_repo2", 0)
+        if not match_id:
+            raise ValueError(f"No game match with id: {match_id}")
 
-        return Match(match_id, HexField(25, 25), [player1, player2],
-                     {player1.name: Directions.HORIZONTAL,
-                      player2.name: Directions.VERTICAL},
-                     time_for_game=180,
-                     time_for_move=10)
+        try:
+            with open(self.get_saving_name_by_match_id(match_id), "r") as file:
+                data = json.loads(file.read())
+                player_by_name = {
+                    data["players"][0]:
+                        self.__players_rep.get_by_id(data["players"][0]),
+                    data["players"][1]:
+                        self.__players_rep.get_by_id(data["players"][1])
+                }
+                # TODO: why match id calls game id?
+                game_id = data["game id"]
+                players = list(player_by_name.values())
+                field = MatchesRepository.create_hex_field(data["field"],
+                                                           player_by_name)
+                match = Match(game_id,
+                              field,
+                              players,
+                              data["direction by player name"],
+                              data["remaining game sec"],
+                              data["remaining move sec"])
+
+                match._current_player_index = data["current player index"]
+                match._is_over = data["is over"]
+                if data["is starting"] and not match.is_over():
+                    match.start_game()
+                    match.pause_game()
+                    # TODO: is_pause is always true. Is it correct?
+                    # TODO: it works,
+                    #  because saving from pause menu
+                match._winner_path = data["winner path"]
+
+                return match
+        except FileNotFoundError:
+            raise ValueError(f"No match with id: {match_id}")
 
     def save_with_id(self, match: Match, match_id: str):
         if "\\" in match_id or "/" in match_id:
@@ -57,12 +63,28 @@ class MatchesRepository(Repository):
                              f"use '\\' or '/' in name of saving")
 
         data = MatchesRepository.__convert_match_to_serializable_dict(match)
-        json.dump(data, open(os.path.join(self._directory_path,
-                                          match_id + ".json"),
-                             "w"))
+        json.dump(data, open(self.get_saving_name_by_match_id(match_id), "w"))
 
     def save(self, match: Match):
         raise NotImplemented
+
+    @staticmethod
+    def create_hex_field(data, owner_by_name: dict[str, PlayerProfile]):
+        field = HexField(data["width"], data["height"])
+
+        field.set_cell_states(data["cells states"])
+
+        cell_owners_names = data["cells owners names"]
+        cell_owners = {}
+        for cell_index, owner_name in cell_owners_names:
+            cell_owners[cell_index] = owner_by_name[owner_name]
+        field.set_cells_owners(cell_owners)
+
+        return field
+
+
+    def get_saving_name_by_match_id(self, match_id: str):
+        return os.path.join(self._directory_path, match_id + ".json")
 
     @staticmethod
     def __convert_match_to_serializable_dict(match):

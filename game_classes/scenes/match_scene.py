@@ -48,6 +48,9 @@ class MatchScene(Scene):
         self.__rating_recorder = rating_recorder
         self.__matches_rep = matches_repository
 
+        # TODO: maybe it is too much
+        self.__label_update_timer.start()
+
         self.add_gui_element(BotListener(self.__match))
 
         self.create_gui()
@@ -69,7 +72,7 @@ class MatchScene(Scene):
                 self.__label_update_timer.resume()
             else:
                 self.__match.start_game()
-                self.__label_update_timer.start()
+                # self.__label_update_timer.start()
 
     def on_hide(self):
         self.freeze()
@@ -132,13 +135,15 @@ class MatchScene(Scene):
             (self
              .__hex_field_gui_element
              .add_child(Line(path_centers, WIN_LINE_COLOR)))
+
+            self.__move_owner_label.set_font_color(
+                color_theme.get_color_by_player_profile(self.__match,
+                                                        self.__match
+                                                        .get_move_owner()))
+            self.__move_owner_label.set_text(
+                f"Winner: {winner.name}")
+
         self.__pause_button.set_text("Continue")
-        self.__move_owner_label.set_font_color(
-            color_theme.get_color_by_player_profile(self.__match,
-                                                    self.__match
-                                                    .get_move_owner()))
-        self.__move_owner_label.set_text(
-            f"Winner: {winner.name}")
 
     def create_gui(self):
         self.set_bg_color(SCENE_BG_COLOR)
@@ -154,9 +159,10 @@ class MatchScene(Scene):
         self.__match.add_on_game_over(on_stop)
 
         if self.__match.is_over():
+            on_stop()
             self.show_winner(self.__match.get_move_owner(),
                              self.__match.winner_path)
-        else:
+        else :
             self.__match.add_on_win(self.show_winner)
 
         if environment.FREEZE_BUTTON:
