@@ -1,4 +1,8 @@
+import os
+
 LOG = False
 FREEZE_BUTTON = False
-PLAYERS_REP_PATH = ".\\game_data\\players"
-MATCHES_REP_PATH = ".\\game_data\\matches"
+
+REPOSITORIES_DIR_PATH = os.path.join(os.getcwd(), "game_data")
+PLAYERS_REP_PATH = os.path.join(REPOSITORIES_DIR_PATH, "players")
+MATCHES_REP_PATH = os.path.join(REPOSITORIES_DIR_PATH, "matches")

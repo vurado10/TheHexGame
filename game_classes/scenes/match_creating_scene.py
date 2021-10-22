@@ -1,9 +1,5 @@
-import threading
-
 import pygame
 from game_classes import color_theme, environment
-from game_classes.ai.bot import Bot
-from game_classes.ai.random_bot import RandomBot
 from game_classes.color_theme import PLAYER1_COLOR, PLAYER2_COLOR
 from game_classes.game_domain.directions import Directions
 from game_classes.game_domain.hex_field import HexField
@@ -12,7 +8,6 @@ from game_classes.game_domain.player_profile import PlayerProfile
 from game_classes.rating_system.rating_recorder import RatingRecorder
 from game_classes.scenes.ai_settings_helper import AiSettingsHelper
 from game_classes.scenes.match_scene import MatchScene
-from game_classes.scenes.saving_scene import SavingScene
 from game_classes.storages.matches_repository import MatchesRepository
 from game_classes.storages.players_repository import PlayersRepository
 from game_classes.widgets.widgets_factory import WidgetsFactory
@@ -166,7 +161,8 @@ class MatchCreatingScene(Scene):
             player = players_rep.get_by_id(name)
             player.color = color
         except ValueError:
-            player = PlayerProfile(name, color, 0)
+            player = PlayerProfile(name, 0)
+            players_rep.save(player)
 
         return player
 

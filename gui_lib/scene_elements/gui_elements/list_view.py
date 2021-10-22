@@ -60,6 +60,7 @@ class ListView(Widget):
 
             button.add_handler(pygame.MOUSEBUTTONDOWN,
                                lambda *args: self.set_chosen_value())
+            button.hide()
 
             last_position += Vector2(0, button.height + space_between_items)
 

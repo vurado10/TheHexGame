@@ -32,13 +32,14 @@ class Match:
         self._players = list(players)
         self._direction_by_player_name = dict(direction_by_player_name)
         self._current_player_index = 0
-        self._on_switch_move_owner_funcs = []
-        self._on_game_over_funcs = []
-        self._on_win_funcs = []
         self._is_over = False
         self._is_pause = False
         self._is_starting = False
         self._winner_path = []
+
+        self._on_switch_move_owner_funcs = []
+        self._on_game_over_funcs = []
+        self._on_win_funcs = []
 
         self.__timer = None
         self.__remaining_game_sec = time_for_game
@@ -57,7 +58,7 @@ class Match:
         return self._game_id
 
     @property
-    def field(self):
+    def field(self) -> HexField:
         return self._field
 
     @property
@@ -92,8 +93,20 @@ class Match:
               == direction):
             return self._players[1]
 
+    # TODO: code repeating
+    def get_move_order_by_direction(self, direction: int):
+        if self._direction_by_player_name[self.get_player(0).name] \
+                == direction:
+            return 0
+        elif self._direction_by_player_name[self.get_player(1).name] \
+                == direction:
+            return 1
+
     def get_player(self, move_order_index: int) -> PlayerProfile:
         return self._players[move_order_index]
+
+    def get_current_move_order_index(self):
+        return self._current_player_index
 
     def get_move_order_index_by_player_name(self, name):
         if self._players[0].name == name:
@@ -252,12 +265,3 @@ class Match:
 
     def get_move_owner(self) -> PlayerProfile:
         return self._players[self._current_player_index]
-
-    # def serialize(self):
-    #     data = {
-    #         "field": self._field.serialize(),
-    #         "is_over": self._is_over,
-    #         "winner_path": self._winner_path,
-    #     }
-    #
-    #     return json.dumps(data)

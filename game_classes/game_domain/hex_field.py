@@ -10,13 +10,31 @@ class HexField:
         super().__init__()
         self.width = width
         self.height = height
-        self.__cells_states = [CellStates.NEUTRAL] * (self.width * self.height)
+        self.__cells_states = [CellStates.NEUTRAL] * self.size
         self.__cells_owners = {}
+
         self.__on_cell_state_changing_funcs = []
 
     @property
     def size(self) -> int:
         return self.width * self.width
+
+    def get_cell_states(self):
+        return list(self.__cells_states)
+
+    # TODO: secure
+    def set_cell_states(self, states: list[int]):
+        if len(states) != self.size:
+            raise ValueError(f"states size must be {self.size}")
+
+        self.__cells_states = list(states)
+
+    def get_cells_owners(self):
+        return dict(self.__cells_owners)
+
+    # TODO: secure
+    def set_cells_owners(self, owners: dict[int, PlayerProfile]):
+        self.__cells_owners = dict(owners)
 
     def add_on_cell_owner_changing(self, func):
         """func(int cell_index, Player current_owner, Player next_owner)

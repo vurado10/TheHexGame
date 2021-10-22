@@ -1,10 +1,11 @@
+import json
+import os
 from game_classes.game_domain.directions import Directions
 from game_classes.game_domain.hex_field import HexField
 from game_classes.game_domain.match import Match
 from game_classes.game_domain.player_profile import PlayerProfile
 from game_classes.storages.players_repository import PlayersRepository
 from game_classes.storages.repository import Repository
-from gui_lib.rgb_colors import RgbColors
 
 
 class MatchesRepository(Repository):
@@ -40,8 +41,9 @@ class MatchesRepository(Repository):
         return "Game"
 
     def get_by_id(self, match_id: str) -> Match:
-        player1 = PlayerProfile("player_from_repo1", RgbColors.WHITE, 0)
-        player2 = PlayerProfile("player_from_repo2", RgbColors.BLACK, 0)
+        print(match_id)
+        player1 = PlayerProfile("player_from_repo1", 0)
+        player2 = PlayerProfile("player_from_repo2", 0)
 
         return Match(match_id, HexField(25, 25), [player1, player2],
                      {player1.name: Directions.HORIZONTAL,
@@ -50,8 +52,48 @@ class MatchesRepository(Repository):
                      time_for_move=10)
 
     def save_with_id(self, match: Match, match_id: str):
-        # TODO: ValueError if match_id isn't correct
-        raise ValueError
+        if "\\" in match_id or "/" in match_id:
+            raise ValueError(f"It's impossible to "
+                             f"use '\\' or '/' in name of saving")
+
+        data = MatchesRepository.__convert_match_to_serializable_dict(match)
+        json.dump(data, open(os.path.join(self._directory_path,
+                                          match_id + ".json"),
+                             "w"))
 
     def save(self, match: Match):
-        print(match)
+        raise NotImplemented
+
+    @staticmethod
+    def __convert_match_to_serializable_dict(match):
+        return {
+            "game id": match.game_id,
+            "field":
+                MatchesRepository.__convert_hex_field_to_serializable_dict(
+                    match.field),
+            "players": [match.get_player(0).name, match.get_player(1).name],
+            "direction by player name":
+                match.get_direction_by_player_name_dict(),
+            "current player index": match._current_player_index,
+            "is over": match.is_over(),
+            "is pause": match.is_pause(),
+            "is starting": match._is_starting,
+            "winner path": match.winner_path,
+            "remaining game sec": match.get_remaining_game_sec(),
+            "remaining move sec": match.get_remaining_move_sec()
+        }
+
+    @staticmethod
+    def __convert_hex_field_to_serializable_dict(field: HexField):
+        cells_owners = field.get_cells_owners()
+        cells_owners_names = list()
+        for cell_index in cells_owners:
+            cells_owners_names.append([cell_index,
+                                       cells_owners[cell_index].name])
+
+        return {
+            "width": field.width,
+            "height": field.height,
+            "cells states": field.get_cell_states(),
+            "cells owners names": cells_owners_names
+        }

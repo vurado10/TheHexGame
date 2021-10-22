@@ -1,4 +1,4 @@
-from game_classes import environment
+from game_classes import environment, color_theme
 import pygame
 from game_classes.ai.bot import Bot
 from game_classes.color_theme import *
@@ -104,10 +104,10 @@ class MatchScene(Scene):
             bot.unlock_sending_response()
 
     def update_move_owner_label(self, owner):
-        turn_owner = owner
-        self.__move_owner_label.set_font_color(turn_owner.color)
+        self.__move_owner_label.set_font_color(
+            color_theme.get_color_by_player_profile(self.__match, owner))
         self.__move_owner_label.set_text(
-            f"Move: {turn_owner.name}")
+            f"Move: {owner.name}")
 
     def update_timer_labels(self):
         game_time_text = \
@@ -134,7 +134,9 @@ class MatchScene(Scene):
              .add_child(Line(path_centers, WIN_LINE_COLOR)))
         self.__pause_button.set_text("Continue")
         self.__move_owner_label.set_font_color(
-            winner.color)
+            color_theme.get_color_by_player_profile(self.__match,
+                                                    self.__match
+                                                    .get_move_owner()))
         self.__move_owner_label.set_text(
             f"Winner: {winner.name}")
 
