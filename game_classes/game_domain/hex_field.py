@@ -126,6 +126,7 @@ class HexField:
                 return [start]
             deque.append(start)
         used = set()
+        cells_in_deque = {start, }
         tracking_result = {start: None}
 
         while len(deque) != 0:
@@ -135,7 +136,8 @@ class HexField:
                                + self.get_adjacent_cells(current_cell))
             for checking_cell in cells_for_check:
                 if key(checking_cell):
-                    if checking_cell not in used:
+                    if checking_cell not in used \
+                            and checking_cell not in cells_in_deque:
                         if checking_cell not in tracking_result:
                             tracking_result[checking_cell] = current_cell
 
@@ -144,6 +146,7 @@ class HexField:
                                 tracking_result, checking_cell)
 
                         deque.append(checking_cell)
+                        cells_in_deque.add(checking_cell)
 
         return []
 

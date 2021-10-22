@@ -19,6 +19,7 @@ class GreedyBot(Bot):
             self.__direction)
 
     def make_move(self) -> int:
+        # TODO: stop bots, when app is closing
         if self.__last_cell_index == -1:
             start_cells = \
                 self._match.get_start_cells_by_direction(self.__direction)
@@ -43,17 +44,17 @@ class GreedyBot(Bot):
             if tmp_path:
                 paths.append(tmp_path)
 
-        min_length = len(min(paths, key=lambda path: len(path)))
-        paths = list(filter(lambda path: len(path) == min_length, paths))
-
         if paths:
+            min_length = len(min(paths, key=lambda path: len(path)))
+            paths = list(filter(lambda path: len(path) == min_length, paths))
             path_index = random.randint(0, len(paths) - 1)
+
             self.__last_cell_index = paths[path_index][0]
         else:
             self.__last_cell_index = \
                 ai_helper.get_random_valid_cell_index(self._match,
                                                       self._player_name)
 
-        time.sleep(0.1)
+        time.sleep(0.05)
 
         return self.__last_cell_index
