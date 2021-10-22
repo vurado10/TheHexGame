@@ -31,7 +31,8 @@ class Bot(ABC):
             #  some results can disappear,
             #  when scenes are switching, so bot can wait forever,
             #  if there is no timeout
-            self._make_move_request_event.wait(timeout=2.0)
+            # self._make_move_request_event.wait(timeout=2.0)
+            self._make_move_request_event.wait()
 
             # TODO: make "bot stop" event
 

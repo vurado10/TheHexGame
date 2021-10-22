@@ -1,5 +1,7 @@
 import collections
 from typing import List, Tuple, Set
+
+from game_classes.game_domain.directions import Directions
 from gui_lib import utilities
 from game_classes.game_domain.cell_states import CellStates
 from game_classes.game_domain.player_profile import PlayerProfile
@@ -117,12 +119,9 @@ class HexField:
         return list(
             range(column_index, self.width * self.height, self.width))
 
-    def get_path_for_owner(self,
-                           owner: PlayerProfile,
-                           start: int,
-                           stop_cells: Set[int]):
+    def get_path(self, start: int, stop_cells: set[int], key):
         deque = collections.deque()
-        if self.is_occupied(start) and self.get_owner(start) is owner:
+        if key(start):
             if start in stop_cells:
                 return [start]
             deque.append(start)
@@ -135,8 +134,7 @@ class HexField:
             cells_for_check = ([current_cell]
                                + self.get_adjacent_cells(current_cell))
             for checking_cell in cells_for_check:
-                if (self.is_occupied(checking_cell)
-                        and self.get_owner(checking_cell) is owner):
+                if key(checking_cell):
                     if checking_cell not in used:
                         if checking_cell not in tracking_result:
                             tracking_result[checking_cell] = current_cell
@@ -148,19 +146,17 @@ class HexField:
                         deque.append(checking_cell)
 
         return []
-    #
-    # def serialize(self):
-    #     data = {
-    #         "states": self.__cells_states,
-    #         "owners": self.__cells_owners,
-    #         "width": self.width,
-    #         "height": self.height
-    #     }
-    #
-    #     return json.dumps(data)
-    #
-    # def load(self):
-    #     pass
+
+    def check_for_owner(self, cell_index, owner):
+        return self.is_occupied(cell_index) \
+               and self.get_owner(cell_index) is owner
+
+    def get_path_for_owner(self,
+                           owner: PlayerProfile,
+                           start: int,
+                           stop_cells: set[int]):
+        return self.get_path(start, stop_cells,
+                             lambda cell: self.check_for_owner(cell, owner))
 
     @staticmethod
     def _get_path_from_tracking(tracking_result, stop_cell):

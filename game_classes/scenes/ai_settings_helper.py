@@ -2,6 +2,7 @@ import threading
 
 from game_classes import environment
 from game_classes.ai.bot import Bot
+from game_classes.ai.greedy_bot import GreedyBot
 from game_classes.ai.random_bot import RandomBot
 
 
@@ -33,7 +34,7 @@ class AiSettingsHelper:
         if ai_type == self.__ai_types[1]:
             bot = RandomBot(match, player_name)
         elif ai_type == self.__ai_types[2]:
-            bot = RandomBot(match, player_name)
+            bot = GreedyBot(match, player_name)
         else:
             return None
 

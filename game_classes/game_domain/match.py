@@ -67,8 +67,32 @@ class Match:
     def winner_path(self):
         return list(self._winner_path)
 
+    def get_player_by_name(self, name):
+        if self._players[0].name == name:
+            return self._players[0]
+        elif self._players[1].name == name:
+            return self._players[1]
+
+        raise ValueError(f"No player in match with name: {name}")
+
     def has_winner(self):
         return len(self._winner_path) != 0
+
+    def get_start_cells_by_direction(self, direction: int):
+        if direction == Directions.HORIZONTAL:
+            return self._field.get_all_cells_in_column(0)
+        elif direction == Directions.VERTICAL:
+            return self._field.get_all_cells_in_row(0)
+
+        raise ValueError(f"No start cells for direction: {direction}")
+
+    def get_stop_cells_by_direction(self, direction: int):
+        if direction == Directions.HORIZONTAL:
+            return self._field.get_all_cells_in_column(self._field.width - 1)
+        if direction == Directions.VERTICAL:
+            return self._field.get_all_cells_in_row(self._field.height - 1)
+
+        raise ValueError(f"No stop cells for direction: {direction}")
 
     def handle_timer_tick(self, interval):
         self.__remaining_game_sec -= interval
@@ -186,14 +210,8 @@ class Match:
         current_direction = \
             self._direction_by_player_name[self.get_move_owner().name]
 
-        if current_direction == Directions.VERTICAL:
-            start_cells = self._field.get_all_cells_in_row(0)
-            stop_cells = self._field.get_all_cells_in_row(
-                self._field.height - 1)
-        else:
-            start_cells = self._field.get_all_cells_in_column(0)
-            stop_cells = self._field.get_all_cells_in_column(
-                self._field.width - 1)
+        start_cells = self.get_start_cells_by_direction(current_direction)
+        stop_cells = self.get_stop_cells_by_direction(current_direction)
 
         for start_cell in start_cells:
             path_for_owner = self._field.get_path_for_owner(

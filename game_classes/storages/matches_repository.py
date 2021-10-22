@@ -1,6 +1,5 @@
 import json
 import os
-from game_classes.game_domain.directions import Directions
 from game_classes.game_domain.hex_field import HexField
 from game_classes.game_domain.match import Match
 from game_classes.game_domain.player_profile import PlayerProfile
@@ -81,7 +80,6 @@ class MatchesRepository(Repository):
         field.set_cells_owners(cell_owners)
 
         return field
-
 
     def get_saving_name_by_match_id(self, match_id: str):
         return os.path.join(self._directory_path, match_id + ".json")
