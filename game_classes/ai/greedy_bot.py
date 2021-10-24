@@ -25,7 +25,7 @@ class GreedyBot(Bot):
                 self._match.get_start_cells_by_direction(self.__direction)
 
             self.__last_cell_index = start_cells[
-                random.randint(0, len(start_cells))]
+                random.randint(0, len(start_cells) - 1)]
 
             return self.__last_cell_index
 
